@@ -7,7 +7,7 @@
     backupGlobals="true"
     >
     <testsuites>
-        <testsuite name="OriginPHP Collection">
+        <testsuite name="Encryption">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>

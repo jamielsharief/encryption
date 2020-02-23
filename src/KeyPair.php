@@ -1,6 +1,6 @@
 <?php
 /**
- * Asymmetric Encryption Class
+ * KeyPair Object
  * Copyright 2020 Jamiel Sharief.
  *
  * Licensed under The MIT License
