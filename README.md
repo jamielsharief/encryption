@@ -2,8 +2,10 @@
 
 This library supports both Asymmetric (using key pairs) and Symmetric (single key) encryption. 
 
+## Asymmetric Encryption
 
-### Asymmetric Encryption
+
+### Encryption
 
 First you need to generate a key pair (public and private key).
 
@@ -15,6 +17,22 @@ $publicKey = $keyPair->public(); // this is used to encrypt data
 $privateKey = $keyPair->private(); // this is to decrypt data
 ```
 
+To encrypt a string
+
+```php
+$crypto = new AsymmetricEncryption();
+$encrypted = $crypto->encrypt($text,$publicKey);
+```
+
+To decrypt a string
+
+```php
+$crypto = new AsymmetricEncryption();
+$decrypted = $crypto->decrypt($encrypted,$privateKey);
+```
+
+### Encryption with a passphrase
+
 If you wish to password protect the decryption process, when you generate the key
 supply a password.
 
@@ -23,21 +41,7 @@ $crypto = new AsymmetricEncryption();
 $keyPair = $crypto->generateKeyPair(['password'=>'secret']);
 ```
 
-To encrypt a string without a passphrase
-
-```php
-$crypto = new AsymmetricEncryption();
-$encrypted = $crypto->encrypt($text,$publicKey);
-```
-
-To decrypt a string without a passphrase
-
-```php
-$crypto = new AsymmetricEncryption();
-$decrypted = $crypto->decrypt($encrypted,$privateKey);
-```
-
-To encrypt a string with passphrase
+To encrypt a string with a passphrase
 
 ```php
 $crypto = new AsymmetricEncryption();
@@ -51,7 +55,7 @@ $crypto = new AsymmetricEncryption();
 $decrypted = $crypto->decrypt($encrypted,$privateKey,'secret');
 ```
 
-### Symmetric Encryption
+## Symmetric Encryption
 
 First you need to generate a key that must be 32 bits.
 
