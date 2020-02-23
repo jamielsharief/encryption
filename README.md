@@ -63,15 +63,14 @@ $key = $crypto->generateKey(); // this is used to encrypt/decrypt
 To encrypt a string
 
 ```php
-$crypto = new AsymmetricEncryption();
+$crypto = new SymmetricEncryption();
 $encrypted = $crypto->encrypt($text, $key);
 ```
-
 
 To decrypt a string
 
 ```php
-$crypto = new AsymmetricEncryption();
+$crypto = new SymmetricEncryption();
 $decrypted = $crypto->decrypt($text, $key);
 ```
 
