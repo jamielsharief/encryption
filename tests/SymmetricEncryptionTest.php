@@ -34,6 +34,8 @@ class SymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $key = $crypto->generateKey();
 
         $encrypted = $crypto->encrypt($text, $key);
-        print $encrypted;
+        $this->assertNotEquals($encrypted, $text);
+        $decrypted = $crypto->decrypt($encrypted, $key);
+        $this->assertEquals($text, $decrypted);
     }
 }

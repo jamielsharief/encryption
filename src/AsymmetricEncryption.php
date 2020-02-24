@@ -35,7 +35,7 @@ class AsymmetricEncryption
             throw new Exception('Unable to encrypt data with key');
         }
 
-        return $this->addBoundaries(base64_encode($encrypted));
+        return $this->addBoundaries(base64_encode($encrypted), 'ENCRYPTED DATA');
     }
 
     /**
@@ -44,16 +44,16 @@ class AsymmetricEncryption
      *
      * @param string $encrypted
      * @param string $privateKey
-     * @param string $password
+     * @param string $passphrase
      * @return string
      */
-    public function decrypt(string $encrypted, string $privateKey, string $password = null) : string
+    public function decrypt(string $encrypted, string $privateKey, string $passphrase = null) : string
     {
-        $encrypted = $this->removeBoundaries($encrypted);
+        $encrypted = $this->removeBoundaries($encrypted, 'ENCRYPTED DATA');
         $encrypted = base64_decode($encrypted);
 
-        if ($password) {
-            $privateKey = openssl_get_privatekey($privateKey, $password);
+        if ($passphrase) {
+            $privateKey = openssl_get_privatekey($privateKey, $passphrase);
         }
 
         openssl_private_decrypt($encrypted, $decrypted, $privateKey);
@@ -70,28 +70,57 @@ class AsymmetricEncryption
     * is only for you.
     *
     * @param array $options The following options keys are supported
+    *   size: default: 2048. Key sizes e.g 1024,2048,3072,4096
+    *   passphrase: An optional passphrase to use for the private key
     *   algo:  default: sha512. digest algo. see openssl_get_md_methods()
-    *   bits: default: 4096. the number of bits used to generate the private key.
-    *   password: An optional passphrase to use for the private key
     *
     * @return \Encryption\KeyPair
     */
     public function generateKeyPair(array $options = []) : KeyPair
     {
-        $options += ['algo' => 'sha512', 'bits' => 4096, 'password' => null];
+        $options += ['size' => 2048, 'passphrase' => null,'algo' => 'sha512'];
      
         // @see https://www.php.net/manual/en/function.openssl-csr-new.php
         $keyPair = openssl_pkey_new([
-            'digest_alg' => $options['algo'],
-            'private_key_bits' => $options['bits'],
+            'private_key_bits' => (int) $options['size'],
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
-            'encrypt_key' => $options['password'] !== null
+            'digest_alg' => $options['algo'],
+            'encrypt_key' => $options['passphrase'] !== null
         ]);
 
-        openssl_pkey_export($keyPair, $privateKey, $options['password']);
+        openssl_pkey_export($keyPair, $privateKey, $options['passphrase']);
         $keyDetails = openssl_pkey_get_details($keyPair);
 
         return new KeyPair($keyDetails['key'], $privateKey);
+    }
+
+    /**
+     * Signs the data
+     *
+     * @param string $data
+     * @param string $privateKey
+     * @return string
+     */
+    public function sign(string $data, string $privateKey) : string
+    {
+        openssl_sign($data, $signature, $privateKey, OPENSSL_ALGO_SHA256);
+
+        return $this->addBoundaries(base64_encode($signature), 'SIGNATURE');
+    }
+
+    /**
+     * Verify a string that has been signed
+     *
+     * @param string $data
+     * @param string $signature
+     * @param string $publicKey
+     * @return boolean
+     */
+    public function verify(string $data, string $signature, string $publicKey) : bool
+    {
+        $signature = $this->removeBoundaries($signature, 'SIGNATURE');
+
+        return openssl_verify($data, base64_decode($signature), $publicKey, 'sha256WithRSAEncryption');
     }
 
     /**
@@ -100,23 +129,25 @@ class AsymmetricEncryption
      * @param string $data
      * @return string
      */
-    private function addBoundaries(string $data) : string
+    private function addBoundaries(string $data, string $boundary) : string
     {
-        return "-----BEGIN ENCRYPTED DATA-----\n" . $data  . "\n-----END ENCRYPTED DATA-----";
+        return "-----BEGIN {$boundary}-----\n" . $data  . "\n-----END {$boundary}-----";
     }
 
     /**
-     * Removes the BEGIN/END NECRYPTED DATA boundaries
+     * Removes the BEGIN/END NECRYPTED DATA boundaries.
+     *
+     * In the case a large message/string is encrypted what would be the best possible way
+     * to remove these boundaries?
      *
      * @param string $data
+     * @param string $boundary
      * @return string
      */
-    private function removeBoundaries(string $data) : string
+    private function removeBoundaries(string $data, string $boundary) : string
     {
-        if (substr($data, 0, 30) !== '-----BEGIN ENCRYPTED DATA-----' or substr($data, -28) !== '-----END ENCRYPTED DATA-----') {
-            throw new Exception('Invalid encrypted data');
-        }
+        $data = str_replace("-----BEGIN {$boundary}-----\n", '', $data);
 
-        return substr($data, 31, -29);
+        return str_replace("\n-----END {$boundary}-----", '', $data);
     }
 }

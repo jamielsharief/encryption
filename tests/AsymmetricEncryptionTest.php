@@ -23,15 +23,26 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
     public function testGenerateKeyPair()
     {
         $crypto = new AsymmetricEncryption();
-        $keyPair = $crypto->generateKeyPair();
+        $keyPair = $crypto->generateKeyPair(['size' => 2048,'algo' => 'sha256']);
         $this->assertStringContainsString('-----BEGIN PRIVATE KEY-----', $keyPair->private());
         $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $keyPair->public());
+    }
+
+    public function testSign()
+    {
+        $crypto = new AsymmetricEncryption();
+        $keyPair = $crypto->generateKeyPair(['size' => 2048,'algo' => 'sha256']);
+        $string = 'Every cloud has a silver lining';
+        $signature = $crypto->sign($string, $keyPair->private());
+
+        $this->assertTrue($crypto->verify($string, $signature, $keyPair->public()));
+        $this->assertFalse($crypto->verify($string.'f', $signature, $keyPair->public()));
     }
 
     public function testGenerateKeyPairWithPassphrase()
     {
         $crypto = new AsymmetricEncryption();
-        $keyPair = $crypto->generateKeyPair(['password' => 'foo']);
+        $keyPair = $crypto->generateKeyPair(['passphrase' => 'foo']);
         $this->assertStringContainsString('-----BEGIN ENCRYPTED PRIVATE KEY-----', $keyPair->private());
         $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $keyPair->public());
 
@@ -48,7 +59,7 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectError(ErrorException::class);
         $crypto = new AsymmetricEncryption();
-        $keyPair = $crypto->generateKeyPair(['bits' => -1]);
+        $keyPair = $crypto->generateKeyPair(['size' => -1]);
     }
 
     /**

@@ -4,10 +4,9 @@ This library supports both Asymmetric (using key pairs) and Symmetric (single ke
 
 ## Asymmetric Encryption
 
+### Generating a Public/Private Key Pair
 
-### Encryption
-
-First you need to generate a key pair (public and private key).
+To generate a public/private key pair
 
 ```php
 $crypto = new AsymmetricEncryption();
@@ -17,12 +16,39 @@ $publicKey = $keyPair->public(); // this is used to encrypt data
 $privateKey = $keyPair->private(); // this is to decrypt data
 ```
 
+The default key size is 2048, however you can change this when generating a key pair.
+
+```php
+$crypto = new AsymmetricEncryption();
+$keyPair = $crypto->generateKeyPair(['size'=>4096]);
+```
+
+To encrypt your private key with a passphrase
+
+```php
+$crypto = new AsymmetricEncryption();
+$keyPair = $crypto->generateKeyPair(['passphrase'=>'d0b5e608b9223b4564d3c075c1b97906']);
+```
+
+### Encrypting
+
 To encrypt a string
 
 ```php
 $crypto = new AsymmetricEncryption();
 $encrypted = $crypto->encrypt($text,$publicKey);
 ```
+
+### Encrypting with a passphrase
+
+If you created your keypair with a passphrase then to encrypt using this 
+
+```php
+$crypto = new AsymmetricEncryption();
+$encrypted = $crypto->encrypt($text,$publicKey,'d0b5e608b9223b4564d3c075c1b97906');
+```
+
+### Decrypting
 
 To decrypt a string
 
@@ -31,28 +57,13 @@ $crypto = new AsymmetricEncryption();
 $decrypted = $crypto->decrypt($encrypted,$privateKey);
 ```
 
-### Encryption with a passphrase
-
-If you wish to password protect the decryption process, when you generate the key
-supply a password.
-
-```php
-$crypto = new AsymmetricEncryption();
-$keyPair = $crypto->generateKeyPair(['password'=>'secret']);
-```
-
-To encrypt a string with a passphrase
-
-```php
-$crypto = new AsymmetricEncryption();
-$encrypted = $crypto->encrypt($text,$publicKey,'secret');
-```
+### Decrypting with a Passphrase
 
 To decrypt a string with a passphrase
 
 ```php
 $crypto = new AsymmetricEncryption();
-$decrypted = $crypto->decrypt($encrypted,$privateKey,'secret');
+$decrypted = $crypto->decrypt($encrypted,$privateKey,'d0b5e608b9223b4564d3c075c1b97906');
 ```
 
 ## Symmetric Encryption
