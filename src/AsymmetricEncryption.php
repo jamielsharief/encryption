@@ -12,7 +12,7 @@
  */
 namespace Encryption;
 
-use Exception;
+use Encryption\Exception\EncryptionException;
 
 /**
  * Asymmetric Encryption
@@ -32,7 +32,7 @@ class AsymmetricEncryption
     {
         openssl_public_encrypt($data, $encrypted, $publicKey);
         if ($encrypted === null) {
-            throw new Exception('Unable to encrypt data with key');
+            throw new EncryptionException('Unable to encrypt data with key');
         }
 
         return $this->addBoundaries(base64_encode($encrypted), 'ENCRYPTED DATA');
@@ -54,11 +54,14 @@ class AsymmetricEncryption
 
         if ($passphrase) {
             $privateKey = openssl_get_privatekey($privateKey, $passphrase);
+            if (!$privateKey) {
+                throw new EncryptionException('Invalid passphrase');
+            }
         }
 
         openssl_private_decrypt($encrypted, $decrypted, $privateKey);
         if ($decrypted === null) {
-            throw new Exception('Unable to decrypt data with key');
+            throw new EncryptionException('Unable to decrypt data with key');
         }
 
         return $decrypted;
@@ -106,6 +109,9 @@ class AsymmetricEncryption
     {
         if ($passphrase) {
             $privateKey = openssl_get_privatekey($privateKey, $passphrase);
+            if (!$privateKey) {
+                throw new EncryptionException('Invalid passphrase');
+            }
         }
 
         openssl_sign($data, $signature, $privateKey, OPENSSL_ALGO_SHA256);

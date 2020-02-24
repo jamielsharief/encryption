@@ -17,6 +17,7 @@ namespace Origin\Test\Security;
 use ErrorException;
 use Encryption\KeyPair;
 use Encryption\AsymmetricEncryption;
+use Encryption\Exception\EncryptionException;
 
 class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
 {
@@ -37,6 +38,29 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue($crypto->verify($string, $signature, $keyPair->public()));
         $this->assertFalse($crypto->verify($string.'f', $signature, $keyPair->public()));
+    }
+
+    public function testSignWithPassphrase()
+    {
+        $crypto = new AsymmetricEncryption();
+        $keyPair = $crypto->generateKeyPair(['size' => 1024,'passphrase' => 'secret']);
+        $string = 'Every cloud has a silver lining';
+        $signature = $crypto->sign($string, $keyPair->private(), 'secret');
+
+        $this->assertTrue($crypto->verify($string, $signature, $keyPair->public()));
+        $this->assertFalse($crypto->verify($string.'f', $signature, $keyPair->public()));
+    }
+
+    public function testSignWithIncorrectPassphrase()
+    {
+        $this->expectException(EncryptionException::class);
+
+        $crypto = new AsymmetricEncryption();
+        $keyPair = $crypto->generateKeyPair(['size' => 1024,'passphrase' => 'secret']);
+        $string = 'Every cloud has a silver lining';
+        $signature = $crypto->sign($string, $keyPair->private(), 'foo');
+
+        $this->assertFalse($crypto->verify($string, $signature, $keyPair->public()));
     }
 
     public function testGenerateKeyPairWithPassphrase()
@@ -97,5 +121,18 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
 
         $privateKey = file_get_contents(__DIR__ . '/fixture/private-pass.key');
         $this->assertEquals('foo', $crypto->decrypt($encrypted, $privateKey, 'foo'));
+    }
+
+    public function testEncryptInvalidPassphrase()
+    {
+        $this->expectException(EncryptionException::class);
+        $crypto = new AsymmetricEncryption();
+        
+        $publicKey = file_get_contents(__DIR__ . '/fixture/public-pass.key');
+        $encrypted = $crypto->encrypt('foo', $publicKey);
+        $this->assertStringContainsString('-----BEGIN ENCRYPTED DATA-----', $encrypted);
+
+        $privateKey = file_get_contents(__DIR__ . '/fixture/private-pass.key');
+        $crypto->decrypt($encrypted, $privateKey, 'bar');
     }
 }
