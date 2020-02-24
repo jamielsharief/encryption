@@ -66,6 +66,26 @@ $crypto = new AsymmetricEncryption();
 $decrypted = $crypto->decrypt($encrypted,$privateKey,'d0b5e608b9223b4564d3c075c1b97906');
 ```
 
+### Signing and verifying
+
+To sign a string, this will return a signature
+
+```php
+$signed = (new AsymmetricEncryption())-sign($data, $privateKey);
+```
+
+If your private key is encrypted with a passphrase
+
+```php
+$signed = (new AsymmetricEncryption())-sign($data, $privateKey,'d0b5e608b9223b4564d3c075c1b97906');
+```
+
+To verify the signature
+
+```php
+$bool = (new AsymmetricEncryption())-verify($data, $signature, $publicKey);
+```
+
 ## Symmetric Encryption
 
 First you need to generate a key that must be 32 bits.

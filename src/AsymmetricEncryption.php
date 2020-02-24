@@ -99,10 +99,15 @@ class AsymmetricEncryption
      *
      * @param string $data
      * @param string $privateKey
+     * @param string $passphrase
      * @return string
      */
-    public function sign(string $data, string $privateKey) : string
+    public function sign(string $data, string $privateKey, string $passphrase = null) : string
     {
+        if ($passphrase) {
+            $privateKey = openssl_get_privatekey($privateKey, $passphrase);
+        }
+
         openssl_sign($data, $signature, $privateKey, OPENSSL_ALGO_SHA256);
 
         return $this->addBoundaries(base64_encode($signature), 'SIGNATURE');
