@@ -88,7 +88,7 @@ $bool = (new AsymmetricEncryption())-verify($data, $signature, $publicKey);
 
 ## Symmetric Encryption
 
-First you need to generate a key that must be 32 bits.
+First you need to generate a key that must be 32 bits, for example `46d3e5d2cdd5c1c5a677a4d91af3e3b7`
 
 ```php
 $crypto = new SymmetricEncryption();

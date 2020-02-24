@@ -15,6 +15,7 @@
 namespace Origin\Test\Security;
 
 use Encryption\SymmetricEncryption;
+use Encryption\Exception\EncryptionException;
 
 class SymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
 {
@@ -32,10 +33,21 @@ class SymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $text = 'another day another doug';
         $crypto = new SymmetricEncryption();
         $key = $crypto->generateKey();
-
         $encrypted = $crypto->encrypt($text, $key);
         $this->assertNotEquals($encrypted, $text);
         $decrypted = $crypto->decrypt($encrypted, $key);
         $this->assertEquals($text, $decrypted);
+    }
+
+    public function testEncryptDecryptInvalid()
+    {
+        $this->expectException(EncryptionException::class);
+        $text = 'another day another doug';
+        $crypto = new SymmetricEncryption();
+        $key = $crypto->generateKey();
+       
+        $encrypted = $crypto->encrypt($text, $key);
+     
+        $decrypted = $crypto->decrypt($encrypted, 'd0b5e608b9223b4564d3c075c1b97906');
     }
 }

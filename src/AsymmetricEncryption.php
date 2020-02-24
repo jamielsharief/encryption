@@ -46,6 +46,7 @@ class AsymmetricEncryption
      * @param string $privateKey
      * @param string $passphrase
      * @return string
+     * @throws \Encryption\Exception\EncryptionException
      */
     public function decrypt(string $encrypted, string $privateKey, string $passphrase = null) : string
     {
@@ -104,6 +105,7 @@ class AsymmetricEncryption
      * @param string $privateKey
      * @param string $passphrase
      * @return string
+     * @throws \Encryption\Exception\EncryptionException
      */
     public function sign(string $data, string $privateKey, string $passphrase = null) : string
     {
