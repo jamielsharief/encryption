@@ -52,9 +52,7 @@ class KeyPair
      */
     public function fingerprint() : string
     {
-        preg_match("#-----\r?\n(.*)\r?\n-----#s", $this->publicKey, $matches);
-        $fingerprint = strtoupper(hash('sha1', $matches[1]));
-        return trim(chunk_split($fingerprint, 4, ' '));
+        return (new AsymmetricEncryption)->fingerprint($this->publicKey);
     }
 
     /**

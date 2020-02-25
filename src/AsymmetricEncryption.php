@@ -137,6 +137,18 @@ class AsymmetricEncryption
     }
 
     /**
+     * Generates the fingerprint for a public key
+     *
+     * @return string e.g. D52A E482 CBE7 BB75 0148  3851 93A3 910A 0719 994D
+     */
+    public function fingerprint(string $publicKey) : string
+    {
+        preg_match("#-----\r?\n(.*)\r?\n-----#s", $publicKey, $matches);
+        $fingerprint = strtoupper(hash('sha1', $matches[1]));
+        return trim(chunk_split($fingerprint, 4, ' '));
+    }
+
+    /**
      * Adds the boundaries to an encrypted string
      *
      * @param string $data

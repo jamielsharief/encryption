@@ -106,6 +106,7 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $privateKey = file_get_contents(__DIR__ . '/fixture/private.key');
         $keypair = new KeyPair($publicKey, $privateKey);
         $this->assertEquals('9C94 5F9A 7BBB 171D D988 3816 15B3 4199 8367 CFA3', $keypair->fingerprint());
+        $this->assertEquals('9C94 5F9A 7BBB 171D D988 3816 15B3 4199 8367 CFA3', (new AsymmetricEncryption())->fingerprint($publicKey));
     }
 
     public function testEncryptDecrypt()
