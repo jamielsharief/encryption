@@ -27,6 +27,8 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $keyPair->public());
     }
 
+
+
     public function testSign()
     {
         $crypto = new AsymmetricEncryption();
@@ -95,6 +97,15 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $crypto = new AsymmetricEncryption();
         $keyPair = $crypto->generateKeyPair(['algo' => 'sha256']);
         $this->assertInstanceOf(KeyPair::class, $keyPair);
+    }
+
+
+    public function testFingerprint()
+    {
+        $publicKey = file_get_contents(__DIR__ . '/fixture/public.key');
+        $privateKey = file_get_contents(__DIR__ . '/fixture/private.key');
+        $keypair = new KeyPair($publicKey, $privateKey);
+        $this->assertEquals('3CDD 2D77 F5F3 B7B0 EB73 A0D2 6C4C 61AB 8134 B5F3', $keypair->fingerprint());
     }
 
     public function testEncryptDecrypt()

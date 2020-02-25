@@ -44,4 +44,15 @@ class KeyPair
     {
         return $this->privateKey;
     }
+
+    /**
+     * Gets the public key fingerprint
+     *
+     * @return string e.g. D52A E482 CBE7 BB75 0148  3851 93A3 910A 0719 994D
+     */
+    public function fingerprint() : string
+    {
+        $fingerprint = strtoupper(hash('sha1', $this->publicKey));
+        return trim(chunk_split($fingerprint, 4, ' '));
+    }
 }
