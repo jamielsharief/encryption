@@ -1,9 +1,7 @@
 <?php
 /**
- * Symmetric Encryption Class
+ * Encryption
  * Copyright 2020 Jamiel Sharief.
- *
- * Originally written for OriginPHP
  *
  * Licensed under The MIT License
  * The above copyright notice and this permission notice shall be included in all copies or substantial

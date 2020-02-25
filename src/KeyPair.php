@@ -1,6 +1,6 @@
 <?php
 /**
- * KeyPair Object
+ * Encryption
  * Copyright 2020 Jamiel Sharief.
  *
  * Licensed under The MIT License

@@ -1,6 +1,6 @@
 <?php
 /**
- * Asymmetric Encryption Class
+ * Encryption
  * Copyright 2020 Jamiel Sharief.
  *
  * Licensed under The MIT License
