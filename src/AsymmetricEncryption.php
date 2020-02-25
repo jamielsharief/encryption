@@ -20,6 +20,7 @@ use Encryption\Exception\EncryptionException;
  */
 class AsymmetricEncryption
 {
+    const BOUNDARY_PATTERN = "#-----\r?\n(.*)\r?\n-----#s";
     /**
      * Encrypts a string. Data is encrypted with OpenSSL, and the encrypted binary data
      * is base64 encoded
@@ -50,7 +51,7 @@ class AsymmetricEncryption
      */
     public function decrypt(string $encrypted, string $privateKey, string $passphrase = null) : string
     {
-        $encrypted = $this->removeBoundaries($encrypted, 'ENCRYPTED DATA');
+        $encrypted = $this->removeBoundaries($encrypted);
         $encrypted = base64_decode($encrypted);
 
         if ($passphrase) {
@@ -131,7 +132,7 @@ class AsymmetricEncryption
      */
     public function verify(string $data, string $signature, string $publicKey) : bool
     {
-        $signature = $this->removeBoundaries($signature, 'SIGNATURE');
+        $signature = $this->removeBoundaries($signature);
 
         return openssl_verify($data, base64_decode($signature), $publicKey, 'sha256WithRSAEncryption');
     }
@@ -143,7 +144,7 @@ class AsymmetricEncryption
      */
     public function fingerprint(string $publicKey) : string
     {
-        preg_match("#-----\r?\n(.*)\r?\n-----#s", $publicKey, $matches);
+        preg_match(self::BOUNDARY_PATTERN, $publicKey, $matches);
         $fingerprint = strtoupper(hash('sha1', $matches[1]));
         return trim(chunk_split($fingerprint, 4, ' '));
     }
@@ -166,10 +167,12 @@ class AsymmetricEncryption
      * @param string $boundary
      * @return string
      */
-    private function removeBoundaries(string $data, string $boundary) : string
+    private function removeBoundaries(string $data) : string
     {
-        $data = str_replace("-----BEGIN {$boundary}-----\n", '', $data);
-
-        return str_replace("\n-----END {$boundary}-----", '', $data);
+        preg_match(self::BOUNDARY_PATTERN, $data, $matches);
+        if ($matches) {
+            $data = $matches[1];
+        }
+        return $data;
     }
 }
