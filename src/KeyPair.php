@@ -19,8 +19,8 @@ class KeyPair
     
     public function __construct(string $publicKey, string $privateKey)
     {
-        $this->publicKey = $publicKey;
-        $this->privateKey = $privateKey;
+        $this->publicKey = trim($publicKey);
+        $this->privateKey = trim($privateKey);
     }
 
     /**
@@ -52,7 +52,21 @@ class KeyPair
      */
     public function fingerprint() : string
     {
-        $fingerprint = strtoupper(hash('sha1', $this->publicKey));
+        preg_match("#-----\r?\n(.*)\r?\n-----#s", $this->publicKey, $matches);
+        $fingerprint = strtoupper(hash('sha1', $matches[1]));
         return trim(chunk_split($fingerprint, 4, ' '));
+    }
+
+    /**
+     * Exports the public key (and private key)
+     *
+     * @param string $file
+     * @param boolean $includePrivateKey
+     * @return boolean
+     */
+    public function export(string $file, bool $includePrivateKey = false) : bool
+    {
+        $out = $includePrivateKey ? $this->publicKey . PHP_EOL . $this->privateKey : $this->publicKey;
+        return file_put_contents($file, $out);
     }
 }

@@ -105,7 +105,7 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $publicKey = file_get_contents(__DIR__ . '/fixture/public.key');
         $privateKey = file_get_contents(__DIR__ . '/fixture/private.key');
         $keypair = new KeyPair($publicKey, $privateKey);
-        $this->assertEquals('3CDD 2D77 F5F3 B7B0 EB73 A0D2 6C4C 61AB 8134 B5F3', $keypair->fingerprint());
+        $this->assertEquals('9C94 5F9A 7BBB 171D D988 3816 15B3 4199 8367 CFA3', $keypair->fingerprint());
     }
 
     public function testEncryptDecrypt()
@@ -143,5 +143,18 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
 
         $privateKey = file_get_contents(__DIR__ . '/fixture/private-pass.key');
         $crypto->decrypt($encrypted, $privateKey, 'bar');
+    }
+
+    public function testExport()
+    {
+        $keyPair = (new AsymmetricEncryption())->generateKeyPair();
+        $tmp = sys_get_temp_dir() . '/'.  uniqid();
+        $this->assertTrue($keyPair->export($tmp));
+        $this->assertSame($keyPair->public(), file_get_contents($tmp));
+
+        $tmp = sys_get_temp_dir() . '/'.  uniqid();
+        $this->assertTrue($keyPair->export($tmp, true));
+        $expected = $keyPair->public() . PHP_EOL . $keyPair->private();
+        $this->assertSame($expected, file_get_contents($tmp));
     }
 }

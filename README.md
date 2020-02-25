@@ -32,7 +32,7 @@ $crypto = new AsymmetricEncryption();
 $keyPair = $crypto->generateKeyPair(['passphrase'=>'d0b5e608b9223b4564d3c075c1b97906']);
 ```
 
-### Fingerprint
+#### Fingerprint
 
 To get the public key fingerprint
 
@@ -40,6 +40,20 @@ To get the public key fingerprint
 $crypto = new AsymmetricEncryption();
 $keyPair = $crypto->generateKeyPair();
 $fingerprint = $keypair->fingerprint();   // 1087 BE17 0C58 B41D 5913 8C8E CFE7 B696 6111 4AAB
+```
+
+#### Exporting Keys
+
+To export your public key from the key pair
+
+```php
+$keypair->export('/Users/james/code/public/james.pub');
+```
+
+To export both the public and private key from the key pair
+
+```php
+$keypair->export('/Users/james/code/public/james.ppk' , true);
 ```
 
 ### Encrypting
