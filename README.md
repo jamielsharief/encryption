@@ -9,6 +9,8 @@ This library supports both Asymmetric (using key pairs) and Symmetric (single ke
 To generate a public/private key pair
 
 ```php
+use Encryption\AsymmetricEncryption;
+
 $crypto = new AsymmetricEncryption();
 $keyPair = $crypto->generateKeyPair();
 
