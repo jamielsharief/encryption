@@ -148,10 +148,7 @@ class AsymmetricEncryption
     }
 
     /**
-     * Removes the BEGIN/END NECRYPTED DATA boundaries.
-     *
-     * In the case a large message/string is encrypted what would be the best possible way
-     * to remove these boundaries?
+     * Removes the BEGIN/END ENCRYPTED DATA boundaries.
      *
      * @param string $data
      * @param string $boundary
