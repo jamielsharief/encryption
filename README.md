@@ -32,6 +32,16 @@ $crypto = new AsymmetricEncryption();
 $keyPair = $crypto->generateKeyPair(['passphrase'=>'d0b5e608b9223b4564d3c075c1b97906']);
 ```
 
+### Fingerprint
+
+To get the public key fingerprint
+
+```php
+$crypto = new AsymmetricEncryption();
+$keyPair = $crypto->generateKeyPair();
+$fingerprint = $keypair->fingerprint();   // 1087 BE17 0C58 B41D 5913 8C8E CFE7 B696 6111 4AAB
+```
+
 ### Encrypting
 
 To encrypt a string
