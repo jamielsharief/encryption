@@ -1,5 +1,9 @@
 # Encryption
 
+![license](https://img.shields.io/badge/license-MIT-brightGreen.svg)
+[![build status](https://travis-ci.org/jamielsharief/encryption.svg?branch=main)](https://travis-ci.org/jamielsharief/encryption)
+[![coverage status](https://coveralls.io/repos/github/jamielsharief/encryption/badge.svg?branch=main)](https://coveralls.io/github/jamielsharief/encryption?branch=main)
+
 This library supports both Asymmetric (using key pairs) and Symmetric (single key) encryption. 
 
 ## Asymmetric Encryption
