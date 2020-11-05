@@ -14,8 +14,8 @@ use Encryption\AsymmetricEncryption;
 $crypto = new AsymmetricEncryption();
 $keyPair = $crypto->generateKeyPair();
 
-$publicKey = $keyPair->public(); // this is used to encrypt data
-$privateKey = $keyPair->private(); // this is to decrypt data
+$publicKey = $keyPair->publicKey(); // this is used to encrypt data
+$privateKey = $keyPair->privateKey(); // this is to decrypt data
 ```
 
 The default key size is 2048, however you can change this when generating a key pair.
@@ -34,7 +34,7 @@ $keyPair = $crypto->generateKeyPair(['passphrase'=>'d0b5e608b9223b4564d3c075c1b9
 
 #### Fingerprint
 
-To get the public key fingerprint when generating a keypair
+To get the public key fingerprint when generating a key pair
 
 ```php
 $crypto = new AsymmetricEncryption();

@@ -29,7 +29,7 @@ class KeyPair
      *
      * @return string
      */
-    public function public() : string
+    public function publicKey() : string
     {
         return $this->publicKey;
     }
@@ -40,7 +40,7 @@ class KeyPair
     *
     * @return string
     */
-    public function private() : string
+    public function privateKey() : string
     {
         return $this->privateKey;
     }

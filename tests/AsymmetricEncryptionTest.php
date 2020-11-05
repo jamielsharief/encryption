@@ -23,8 +23,8 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
     {
         $crypto = new AsymmetricEncryption();
         $keyPair = $crypto->generateKeyPair(['size' => 2048,'algo' => 'sha256']);
-        $this->assertStringContainsString('-----BEGIN PRIVATE KEY-----', $keyPair->private());
-        $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $keyPair->public());
+        $this->assertStringContainsString('-----BEGIN PRIVATE KEY-----', $keyPair->privateKey());
+        $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $keyPair->publicKey());
     }
 
 
@@ -34,10 +34,10 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $crypto = new AsymmetricEncryption();
         $keyPair = $crypto->generateKeyPair(['size' => 2048,'algo' => 'sha256']);
         $string = 'Every cloud has a silver lining';
-        $signature = $crypto->sign($string, $keyPair->private());
+        $signature = $crypto->sign($string, $keyPair->privateKey());
 
-        $this->assertTrue($crypto->verify($string, $signature, $keyPair->public()));
-        $this->assertFalse($crypto->verify($string.'f', $signature, $keyPair->public()));
+        $this->assertTrue($crypto->verify($string, $signature, $keyPair->publicKey()));
+        $this->assertFalse($crypto->verify($string.'f', $signature, $keyPair->publicKey()));
     }
 
     public function testSignWithPassphrase()
@@ -45,10 +45,10 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $crypto = new AsymmetricEncryption();
         $keyPair = $crypto->generateKeyPair(['size' => 1024,'passphrase' => 'secret']);
         $string = 'Every cloud has a silver lining';
-        $signature = $crypto->sign($string, $keyPair->private(), 'secret');
+        $signature = $crypto->sign($string, $keyPair->privateKey(), 'secret');
 
-        $this->assertTrue($crypto->verify($string, $signature, $keyPair->public()));
-        $this->assertFalse($crypto->verify($string.'f', $signature, $keyPair->public()));
+        $this->assertTrue($crypto->verify($string, $signature, $keyPair->publicKey()));
+        $this->assertFalse($crypto->verify($string.'f', $signature, $keyPair->publicKey()));
     }
 
     public function testSignWithIncorrectPassphrase()
@@ -58,20 +58,20 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $crypto = new AsymmetricEncryption();
         $keyPair = $crypto->generateKeyPair(['size' => 1024,'passphrase' => 'secret']);
         $string = 'Every cloud has a silver lining';
-        $signature = $crypto->sign($string, $keyPair->private(), 'foo');
+        $signature = $crypto->sign($string, $keyPair->privateKey(), 'foo');
 
-        $this->assertFalse($crypto->verify($string, $signature, $keyPair->public()));
+        $this->assertFalse($crypto->verify($string, $signature, $keyPair->publicKey()));
     }
 
     public function testGenerateKeyPairWithPassphrase()
     {
         $crypto = new AsymmetricEncryption();
         $keyPair = $crypto->generateKeyPair(['passphrase' => 'foo']);
-        $this->assertStringContainsString('-----BEGIN ENCRYPTED PRIVATE KEY-----', $keyPair->private());
-        $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $keyPair->public());
+        $this->assertStringContainsString('-----BEGIN ENCRYPTED PRIVATE KEY-----', $keyPair->privateKey());
+        $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $keyPair->publicKey());
 
-        //file_put_contents('private-pass.key', $keyPair->private());
-        //file_put_contents('public-pass.key', $keyPair->public());
+        //file_put_contents('private-pass.key', $keyPair->privateKey());
+        //file_put_contents('public-pass.key', $keyPair->publicKey());
     }
 
     /**
@@ -151,11 +151,11 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $keyPair = (new AsymmetricEncryption())->generateKeyPair();
         $tmp = sys_get_temp_dir() . '/'.  uniqid();
         $this->assertTrue($keyPair->export($tmp));
-        $this->assertSame($keyPair->public(), file_get_contents($tmp));
+        $this->assertSame($keyPair->publicKey(), file_get_contents($tmp));
 
         $tmp = sys_get_temp_dir() . '/'.  uniqid();
         $this->assertTrue($keyPair->export($tmp, true));
-        $expected = $keyPair->public() . PHP_EOL . $keyPair->private();
+        $expected = $keyPair->publicKey() . PHP_EOL . $keyPair->privateKey();
         $this->assertSame($expected, file_get_contents($tmp));
     }
 }
