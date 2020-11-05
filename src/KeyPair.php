@@ -29,7 +29,7 @@ class KeyPair
      *
      * @return string
      */
-    public function publicKey() : string
+    public function publicKey(): string
     {
         return $this->publicKey;
     }
@@ -40,7 +40,7 @@ class KeyPair
     *
     * @return string
     */
-    public function privateKey() : string
+    public function privateKey(): string
     {
         return $this->privateKey;
     }
@@ -50,7 +50,7 @@ class KeyPair
      *
      * @return string e.g. D52A E482 CBE7 BB75 0148  3851 93A3 910A 0719 994D
      */
-    public function fingerprint() : string
+    public function fingerprint(): string
     {
         return (new AsymmetricEncryption)->fingerprint($this->publicKey);
     }
@@ -62,9 +62,10 @@ class KeyPair
      * @param boolean $includePrivateKey
      * @return boolean
      */
-    public function export(string $file, bool $includePrivateKey = false) : bool
+    public function export(string $file, bool $includePrivateKey = false): bool
     {
-        $out = $includePrivateKey ? $this->publicKey . PHP_EOL . $this->privateKey : $this->publicKey;
+        $out = $includePrivateKey ? $this->privateKey . PHP_EOL . $this->publicKey : $this->publicKey;
+
         return file_put_contents($file, $out);
     }
 }

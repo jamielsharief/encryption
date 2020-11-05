@@ -29,7 +29,7 @@ class AsymmetricEncryption
      * @param string $publicKey
      * @return string
      */
-    public function encrypt(string $data, string $publicKey) : string
+    public function encrypt(string $data, string $publicKey): string
     {
         openssl_public_encrypt($data, $encrypted, $publicKey);
         if ($encrypted === null) {
@@ -49,14 +49,14 @@ class AsymmetricEncryption
      * @return string
      * @throws \Encryption\Exception\EncryptionException
      */
-    public function decrypt(string $encrypted, string $privateKey, string $passphrase = null) : string
+    public function decrypt(string $encrypted, string $privateKey, string $passphrase = null): string
     {
         $encrypted = $this->removeBoundaries($encrypted);
         $encrypted = base64_decode($encrypted);
 
         if ($passphrase) {
             $privateKey = openssl_get_privatekey($privateKey, $passphrase);
-            if (!$privateKey) {
+            if (! $privateKey) {
                 throw new EncryptionException('Invalid passphrase');
             }
         }
@@ -75,13 +75,13 @@ class AsymmetricEncryption
     * is only for you.
     *
     * @param array $options The following options keys are supported
-    *   size: default: 2048. Key sizes e.g 1024,2048,3072,4096
-    *   passphrase: An optional passphrase to use for the private key
-    *   algo:  default: sha512. digest algo. see openssl_get_md_methods()
+    *   - size: default: 2048. Key sizes e.g 1024,2048,3072,4096
+    *   - passphrase: An optional passphrase to use for the private key
+    *   - algo:  default: sha512. digest algo. see openssl_get_md_methods()
     *
     * @return \Encryption\KeyPair
     */
-    public function generateKeyPair(array $options = []) : KeyPair
+    public function generateKeyPair(array $options = []): KeyPair
     {
         $options += ['size' => 2048, 'passphrase' => null,'algo' => 'sha512'];
      
@@ -108,11 +108,11 @@ class AsymmetricEncryption
      * @return string
      * @throws \Encryption\Exception\EncryptionException
      */
-    public function sign(string $data, string $privateKey, string $passphrase = null) : string
+    public function sign(string $data, string $privateKey, string $passphrase = null): string
     {
         if ($passphrase) {
             $privateKey = openssl_get_privatekey($privateKey, $passphrase);
-            if (!$privateKey) {
+            if (! $privateKey) {
                 throw new EncryptionException('Invalid passphrase');
             }
         }
@@ -130,7 +130,7 @@ class AsymmetricEncryption
      * @param string $publicKey
      * @return boolean
      */
-    public function verify(string $data, string $signature, string $publicKey) : bool
+    public function verify(string $data, string $signature, string $publicKey): bool
     {
         $signature = $this->removeBoundaries($signature);
 
@@ -142,10 +142,11 @@ class AsymmetricEncryption
      *
      * @return string e.g. D52A E482 CBE7 BB75 0148  3851 93A3 910A 0719 994D
      */
-    public function fingerprint(string $publicKey) : string
+    public function fingerprint(string $publicKey): string
     {
         preg_match(self::BOUNDARY_PATTERN, $publicKey, $matches);
         $fingerprint = strtoupper(hash('sha1', $matches[1]));
+
         return trim(chunk_split($fingerprint, 4, ' '));
     }
 
@@ -155,7 +156,7 @@ class AsymmetricEncryption
      * @param string $data
      * @return string
      */
-    private function addBoundaries(string $data, string $boundary) : string
+    private function addBoundaries(string $data, string $boundary): string
     {
         return "-----BEGIN {$boundary}-----\n" . $data  . "\n-----END {$boundary}-----";
     }
@@ -167,12 +168,13 @@ class AsymmetricEncryption
      * @param string $boundary
      * @return string
      */
-    private function removeBoundaries(string $data) : string
+    private function removeBoundaries(string $data): string
     {
         preg_match(self::BOUNDARY_PATTERN, $data, $matches);
         if ($matches) {
             $data = $matches[1];
         }
+
         return $data;
     }
 }

@@ -12,9 +12,8 @@
  */
 namespace Encryption;
 
-use Encryption\Exception\EncryptionException;
-use Exception;
 use InvalidArgumentException;
+use Encryption\Exception\EncryptionException;
 
 /**
  * Symmetric Encryption
@@ -35,7 +34,7 @@ class SymmetricEncryption
      * @param string $key must must be 256 bits (32 bytes)
      * @return string
      */
-    public function encrypt(string $string, string $key) : string
+    public function encrypt(string $string, string $key): string
     {
         if (mb_strlen($key) !== 32) {
             throw new InvalidArgumentException('Key must be 256 bits (32 bytes)');
@@ -57,7 +56,7 @@ class SymmetricEncryption
      * @return string decrypted string
      * @throws \Encryption\Exception\EncryptionException
      */
-    public function decrypt(string $string, string $key) : string
+    public function decrypt(string $string, string $key): string
     {
         if (mb_strlen($key) !== 32) {
             throw new InvalidArgumentException('Key must be 256 bits (32 bytes)');

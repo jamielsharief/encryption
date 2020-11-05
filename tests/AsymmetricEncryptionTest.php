@@ -27,8 +27,6 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $keyPair->publicKey());
     }
 
-
-
     public function testSign()
     {
         $crypto = new AsymmetricEncryption();
@@ -99,7 +97,6 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(KeyPair::class, $keyPair);
     }
 
-
     public function testFingerprint()
     {
         $publicKey = file_get_contents(__DIR__ . '/fixture/public.key');
@@ -155,7 +152,7 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
 
         $tmp = sys_get_temp_dir() . '/'.  uniqid();
         $this->assertTrue($keyPair->export($tmp, true));
-        $expected = $keyPair->publicKey() . PHP_EOL . $keyPair->privateKey();
+        $expected = $keyPair->privateKey() . PHP_EOL . $keyPair->publicKey();
         $this->assertSame($expected, file_get_contents($tmp));
     }
 }
