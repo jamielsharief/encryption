@@ -152,13 +152,13 @@ $keyChain->create('jon@example.com',[
 To import an existing public key or private/public key pair
 
 ```php
-$keyChain->import('jon@example.com', __DIR__ .'/private.key');
+$keyChain->import('user-1979', __DIR__ .'/private.key');
 ```
 
 You can also set an expiry date for the key
 
 ```php
-$keyChain->create('jon@example.com',__DIR__ .'/public.key',[
+$keyChain->import('user-1979',__DIR__ .'/public.key',[
     'expires' => '+ 1 year'
 ]);
 ```
