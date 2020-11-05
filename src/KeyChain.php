@@ -98,7 +98,7 @@ class KeyChain
         $data = [
             'id' => $id,
             'name' => $name,
-            'type' => empty($keyPair['private']) ? 'public' : 'pair',
+            'type' => empty($keyPair['private']) ? 'public-key' : 'key-pair',
             'fingerprint' => (new AsymmetricEncryption)->fingerprint($keyPair['public']),
             'expires' => $options['expires'] ? date('Y-m-d H:i:s', strtotime($options['expires'])) : null,
             'meta' => $options['meta'] ?? [],

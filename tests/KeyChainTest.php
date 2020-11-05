@@ -97,7 +97,7 @@ class KeyChainTest extends \PHPUnit\Framework\TestCase
         $key = $keyChain->get(self::USERNAME);
         $this->assertEquals($keyPair->publicKey(), $key->publicKey);
         $this->assertNull($key->privateKey);
-        $this->assertEquals('public', $key->type);
+        $this->assertEquals('public-key', $key->type);
     }
 
     public function testImport()
@@ -111,7 +111,7 @@ class KeyChainTest extends \PHPUnit\Framework\TestCase
         $key = $keyChain->get(self::USERNAME);
         $this->assertEquals($keyPair->publicKey(), $key->publicKey);
         $this->assertEquals($keyPair->privateKey(), $key->privateKey);
-        $this->assertEquals('pair', $key->type);
+        $this->assertEquals('key-pair', $key->type);
     }
 
     private function keyChain()
