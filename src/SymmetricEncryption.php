@@ -69,8 +69,8 @@ class SymmetricEncryption
         $raw = substr($string, $length + 32);
         $expected = hash_hmac('sha256', $raw, $key, true);
        
-        if (static::compare($expected, $hmac)) {
-            $decrypted = openssl_decrypt($raw, Self::CIPHER, $key, OPENSSL_RAW_DATA, $iv);
+        if ($this->compare($expected, $hmac)) {
+            $decrypted = openssl_decrypt($raw, self::CIPHER, $key, OPENSSL_RAW_DATA, $iv);
             if ($decrypted) {
                 return $decrypted;
             }
@@ -100,7 +100,7 @@ class SymmetricEncryption
      */
     private function compare(string $original = null, string $compare = null): bool
     {
-        if (! is_string($original) or ! is_string($compare)) {
+        if (! is_string($original) || ! is_string($compare)) {
             return false;
         }
 
