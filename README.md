@@ -127,7 +127,7 @@ $bool = (new AsymmetricEncryption())-verify($data, $signature, $publicKey);
 You can also manage keys with `KeyChain`
 
 ```php
-$keyChain = new KeyChain(__DIR__);
+$keyChain = new KeyChain(__DIR__ . '/keys');
 ```
 
 #### Creating keys and adding to the Key Chain
