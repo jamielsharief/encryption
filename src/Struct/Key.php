@@ -21,11 +21,11 @@ class Key extends DataObject
 {
     public string $id;
     public string $name;
-    public string $type;
-    public string $fingerprint;
-    public array $meta = [];
-    public ?string $expires = null;
     public ?string $privateKey = null;
     public string $publicKey;
+    public string $fingerprint;
+    public ?string $expires = null;
+    public string $type;
+    public ?string $comment = null;
     public string $created;
 }

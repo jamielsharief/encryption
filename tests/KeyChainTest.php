@@ -36,7 +36,7 @@ class KeyChainTest extends \PHPUnit\Framework\TestCase
         $keyChain = $this->keyChain();
         
         $this->assertTrue($keyChain->create(self::USERNAME, [
-            'meta' => ['foo' => 'bar'],
+            'comment' => 'foo',
             'expires' => '2050-01-01 12:00:00'
         ]));
         $created = date('Y-m-d H:i:s');
@@ -45,7 +45,7 @@ class KeyChainTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Key::class, $key);
 
         $this->assertEquals('2050-01-01 12:00:00', $key->expires);
-        $this->assertEquals('bar', $key->meta['foo']);
+        $this->assertEquals('foo', $key->comment);
         $this->assertEquals($created, $key->created);
         $this->assertEquals((new AsymmetricEncryption())->fingerprint($key->publicKey), $key->fingerprint);
     }

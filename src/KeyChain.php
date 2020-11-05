@@ -70,7 +70,7 @@ class KeyChain
      */
     public function exists(string $name): bool
     {
-        return file_exists($this->keyPath($name));
+        return file_exists($this->metaPath($name));
     }
 
     /**
@@ -80,37 +80,35 @@ class KeyChain
      * @param string $keyFile path to key public key or private/public key file
      * @param array $options The following options keys are supported
      *  - expires: a strtotime compatible string on when the key can be used until
-     *  - meta: an array of additional meta data which will be added
+     *  - comment: additional info
      * @return bool
      */
     public function import(string $name, string $keyFile, array $options = []): bool
     {
-        $options += ['expires' => null,'meta' => null];
+        $options += ['expires' => null,'comment' => null];
 
         if (! file_exists($keyFile)) {
             throw new NotFoundException('File does not exist');
         }
-
-        $id = $this->keyId($name);
         $keyData = file_get_contents($keyFile);
         $keyPair = $this->toArray(trim($keyData)); // remove lineendings
 
         $data = [
-            'id' => $id,
+            'id' => $this->keyId($name),
             'name' => $name,
-            'type' => empty($keyPair['private']) ? 'public-key' : 'key-pair',
+            'privateKey' => $keyPair['private'],
+            'publicKey' => $keyPair['public'],
             'fingerprint' => (new AsymmetricEncryption)->fingerprint($keyPair['public']),
             'expires' => $options['expires'] ? date('Y-m-d H:i:s', strtotime($options['expires'])) : null,
-            'meta' => $options['meta'] ?? [],
+            'type' => empty($keyPair['private']) ? 'public-key' : 'key-pair',
+            'comment' => $options['comment'],
             'created' => date('Y-m-d H:i:s')
         ];
 
-        $this->createDirectoryIfNotExists($this->path . '/keys');
-        $this->createDirectoryIfNotExists($this->path . '/meta');
-
-        copy($keyFile, $this->keyPath($name));
-
-        return (bool) file_put_contents($this->metaPath($name), json_encode($data, JSON_PRETTY_PRINT));
+        return (bool) file_put_contents(
+            $this->metaPath($name),
+            json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+        );
     }
 
     /**
@@ -122,17 +120,12 @@ class KeyChain
     public function get(string $name): Key
     {
         $metaPath = $this->metaPath($name);
-        $keyPath = $this->keypath($name);
-
-        if (! file_exists($metaPath) || ! file_exists($keyPath)) {
+ 
+        if (! file_exists($metaPath)) {
             throw new NotFoundException("{$name} not found");
         }
         $meta = json_decode(file_get_contents($metaPath), true);
-        $keys = $this->toArray(file_get_contents($keyPath));
-
-        $meta['privateKey'] = $keys['private'];
-        $meta['publicKey'] = $keys['public'];
-
+    
         return new Key($meta);
     }
 
@@ -144,9 +137,9 @@ class KeyChain
     public function list(): array
     {
         $out = [];
-        foreach (scandir($this->path . '/keys') as $file) {
-            if (pathinfo($file, PATHINFO_EXTENSION) === 'asc') {
-                $out[] = substr($file, 0, -4);
+        foreach (scandir($this->path) as $file) {
+            if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
+                $out[] = substr($file, 0, -5);
             }
         }
 
@@ -162,18 +155,12 @@ class KeyChain
     public function delete(string $name): bool
     {
         $metaPath = $this->metaPath($name);
-        $keyPath = $this->keyPath($name);
 
-        if (! file_exists($metaPath) || ! file_exists($keyPath)) {
+        if (! file_exists($metaPath)) {
             throw new NotFoundException("Key for {$name} not found");
         }
 
-        $result = true;
-        foreach ([$keyPath,$metaPath] as $file) {
-            $result = $result & unlink($file);
-        }
-
-        return $result;
+        return unlink($metaPath);
     }
 
     /**
@@ -182,16 +169,7 @@ class KeyChain
      */
     private function metaPath(string $id): string
     {
-        return sprintf('%s/meta/%s.json', $this->path, $id);
-    }
-
-    /**
-     * @param string $id
-     * @return string
-     */
-    private function keyPath(string $id): string
-    {
-        return sprintf('%s/keys/%s.asc', $this->path, $id);
+        return sprintf('%s/%s.json', $this->path, $id);
     }
 
     /**
@@ -219,16 +197,5 @@ class KeyChain
             'private' => $privateKey,
             'public' => $publicKey
         ];
-    }
-
-    /**
-     * @param string $directory
-     * @return void
-     */
-    private function createDirectoryIfNotExists(string $directory): void
-    {
-        if (! is_dir($directory)) {
-            mkdir($directory, 0775, true);
-        }
     }
 }
