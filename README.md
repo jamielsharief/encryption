@@ -118,6 +118,72 @@ To verify the signature
 $bool = (new AsymmetricEncryption())-verify($data, $signature, $publicKey);
 ```
 
+### KeyChain
+
+You can also manage keys with `KeyChain`
+
+```php
+$keyChain = new KeyChain(__DIR__);
+```
+
+#### Creating keys and adding to the Key Chain
+
+To create a private and public key pair and add this to the `KeyChain`, you can pass an
+email address, username, UUID or any other unique id.
+
+```php
+$keyChain->create('jon@example.com');
+```
+
+You can also set an expiry date for the key
+
+```php
+$keyChain->create('jon@example.com',[
+    'expires' => '+ 1 year'
+]);
+```
+
+#### Importing
+
+To import an existing public key or private/public key pair
+
+```php
+$keyChain->import('jon@example.com', __DIR__ .'/private.key');
+```
+
+You can also set an expiry date for the key
+
+```php
+$keyChain->create('jon@example.com',__DIR__ .'/public.key',[
+    'expires' => '+ 1 year'
+]);
+```
+
+### Get
+
+To get a key and data
+
+```php
+$key = $keyChain->get('jon@example.com');
+```
+
+### Delete
+
+To delete a key and data
+
+```php
+$keyChain->delete('jon@example.com');
+```
+
+### List
+
+To get a list of keys
+
+```php
+$keyChain->list();
+```
+
+
 ## Symmetric Encryption
 
 First you need to generate a key that must be 32 bits, for example `46d3e5d2cdd5c1c5a677a4d91af3e3b7`
