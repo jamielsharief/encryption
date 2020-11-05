@@ -115,7 +115,13 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString('-----BEGIN ENCRYPTED DATA-----', $encrypted);
 
         $privateKey = file_get_contents(__DIR__ . '/fixture/private.key');
+       
         $this->assertEquals('foo', $crypto->decrypt($encrypted, $privateKey));
+
+        // test failure
+        $privateKey = str_replace('YRP', 'foo', $privateKey);
+        $this->expectException(EncryptionException::class);
+        $crypto->decrypt('foo', $privateKey);
     }
 
     public function testEncryptPassphrase()

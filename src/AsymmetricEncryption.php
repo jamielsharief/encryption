@@ -62,7 +62,7 @@ class AsymmetricEncryption
         }
 
         openssl_private_decrypt($encrypted, $decrypted, $privateKey);
-        if ($decrypted === null) {
+        if ($decrypted === null || $decrypted === false) {
             throw new EncryptionException('Unable to decrypt data with key');
         }
 
