@@ -12,13 +12,19 @@
  */
 namespace Encryption;
 
-use Encryption\Struct\Key;
+use DocumentStore\Document;
 use InvalidArgumentException;
+use DocumentStore\DocumentStore;
 use Encryption\Exception\NotFoundException;
 
 class KeyChain
 {
-    private $path;
+    /**
+     * Database
+     *
+     * @var \DocumentStore\DocumentStore
+     */
+    private $documentStore;
 
     /**
      * @param string $directory path to directory where keys are stored
@@ -28,7 +34,7 @@ class KeyChain
         if (! is_dir($directory)) {
             throw new InvalidArgumentException('Path does not exist');
         }
-        $this->path = $directory;
+        $this->documentStore = new DocumentStore($directory);
     }
 
     /**
@@ -59,7 +65,7 @@ class KeyChain
         $keyPair->export($tmpFile, true);
         $this->import($name, $tmpFile, $options);
 
-        return file_exists($this->metaPath($name));
+        return $this->documentStore->has($name);
     }
 
     /**
@@ -70,7 +76,7 @@ class KeyChain
      */
     public function exists(string $name): bool
     {
-        return file_exists($this->metaPath($name));
+        return $this->documentStore->has($name);
     }
 
     /**
@@ -93,7 +99,7 @@ class KeyChain
         $keyData = file_get_contents($keyFile);
         $keyPair = $this->toArray(trim($keyData)); // remove lineendings
 
-        $data = [
+        $document = new Document([
             'id' => $this->keyId($name),
             'name' => $name,
             'privateKey' => $keyPair['private'],
@@ -103,30 +109,24 @@ class KeyChain
             'type' => empty($keyPair['private']) ? 'public-key' : 'key-pair',
             'comment' => $options['comment'],
             'created' => date('Y-m-d H:i:s')
-        ];
+        ]);
 
-        return (bool) file_put_contents(
-            $this->metaPath($name),
-            json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-        );
+        return $this->documentStore->set($name, $document);
     }
 
     /**
      * Gets the meta data for a key
      *
      * @param string $name name of key, e.g. username, email, UUID etc
-     * @return \Encryption\Struct\Key
+     * @return \DocumentStore\Document
      */
-    public function get(string $name): Key
+    public function get(string $name): Document
     {
-        $metaPath = $this->metaPath($name);
- 
-        if (! file_exists($metaPath)) {
-            throw new NotFoundException("{$name} not found");
+        try {
+            return $this->documentStore->get($name);
+        } catch (\DocumentStore\Exception\NotFoundException $exception) {
+            throw new NotFoundException("{$name} was not found");
         }
-        $meta = json_decode(file_get_contents($metaPath), true);
-    
-        return new Key($meta);
     }
 
     /**
@@ -136,14 +136,7 @@ class KeyChain
      */
     public function list(): array
     {
-        $out = [];
-        foreach (scandir($this->path) as $file) {
-            if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
-                $out[] = substr($file, 0, -5);
-            }
-        }
-
-        return $out;
+        return $this->documentStore->list();
     }
 
     /**
@@ -154,22 +147,11 @@ class KeyChain
      */
     public function delete(string $name): bool
     {
-        $metaPath = $this->metaPath($name);
-
-        if (! file_exists($metaPath)) {
-            throw new NotFoundException("Key for {$name} not found");
+        try {
+            return $this->documentStore->delete($name);
+        } catch (\DocumentStore\Exception\NotFoundException $exception) {
+            throw new NotFoundException("{$name} was not found");
         }
-
-        return unlink($metaPath);
-    }
-
-    /**
-     * @param string $id
-     * @return string
-     */
-    private function metaPath(string $id): string
-    {
-        return sprintf('%s/%s.json', $this->path, $id);
     }
 
     /**

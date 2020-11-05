@@ -13,7 +13,7 @@
 namespace Encryption\Test;
 
 use Encryption\KeyChain;
-use Encryption\Struct\Key;
+use DocumentStore\Document;
 use Encryption\AsymmetricEncryption;
 use Encryption\Exception\NotFoundException;
 
@@ -42,7 +42,7 @@ class KeyChainTest extends \PHPUnit\Framework\TestCase
         $created = date('Y-m-d H:i:s');
 
         $key = $keyChain->get(self::USERNAME);
-        $this->assertInstanceOf(Key::class, $key);
+        $this->assertInstanceOf(Document::class, $key);
 
         $this->assertEquals('2050-01-01 12:00:00', $key->expires);
         $this->assertEquals('foo', $key->comment);
