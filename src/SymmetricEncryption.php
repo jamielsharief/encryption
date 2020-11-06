@@ -98,7 +98,7 @@ class SymmetricEncryption
      * @param string $compare
      * @return bool
      */
-    private function compare(string $original = null, string $compare = null): bool
+    protected function compare(string $original = null, string $compare = null): bool
     {
         if (! is_string($original) || ! is_string($compare)) {
             return false;

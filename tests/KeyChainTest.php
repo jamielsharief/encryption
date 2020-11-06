@@ -14,12 +14,19 @@ namespace Encryption\Test;
 
 use Encryption\KeyChain;
 use DocumentStore\Document;
+use InvalidArgumentException;
 use Encryption\AsymmetricEncryption;
 use Encryption\Exception\NotFoundException;
 
 class KeyChainTest extends \PHPUnit\Framework\TestCase
 {
     const USERNAME = 'user@example.com';
+
+    public function testInvalidPath()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new KeyChain('/somewhere/outthere');
+    }
 
     public function testKeyId()
     {
@@ -48,6 +55,13 @@ class KeyChainTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('foo', $key->comment);
         $this->assertEquals($created, $key->created);
         $this->assertEquals((new AsymmetricEncryption())->fingerprint($key->publicKey), $key->fingerprint);
+    }
+
+    public function testGetException()
+    {
+        $keyChain = $this->keyChain();
+        $this->expectException(NotFoundException::class);
+        $keyChain->get('foo');
     }
 
     public function testExists()
