@@ -8,10 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2020-11-05
 
-
 ### Changed
 
-- Changed key pair export order so private is first
+- Changed key pair export order so that the private key is first
 - Renamed KeyPair::public to publicKey
 - Renamed KeyPair::private to privateKey
 
