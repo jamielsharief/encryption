@@ -6,7 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] - 2020-11-05
+
+## [0.2.1] - 2020-11-06
+
+### Changed
+
+- Renamed the KeyChain to Keychain
+
+## [0.2.0] - 2020-11-05
 
 ### Changed
 

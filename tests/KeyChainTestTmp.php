@@ -12,20 +12,20 @@
  */
 namespace Encryption\Test;
 
-use Encryption\KeyChain;
+use Encryption\Keychain;
 use DocumentStore\Document;
 use InvalidArgumentException;
 use Encryption\AsymmetricEncryption;
 use Encryption\Exception\NotFoundException;
 
-class KeyChainTest extends \PHPUnit\Framework\TestCase
+class KeychainTest extends \PHPUnit\Framework\TestCase
 {
     const USERNAME = 'user@example.com';
 
     public function testInvalidPath()
     {
         $this->expectException(InvalidArgumentException::class);
-        new KeyChain('/somewhere/outthere');
+        new Keychain('/somewhere/outthere');
     }
 
     public function testKeyId()
@@ -133,6 +133,6 @@ class KeyChainTest extends \PHPUnit\Framework\TestCase
         $path = sys_get_temp_dir() . '/' . uniqid();
         mkdir($path);
 
-        return new KeyChain($path);
+        return new Keychain($path);
     }
 }

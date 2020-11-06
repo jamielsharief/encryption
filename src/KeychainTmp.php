@@ -17,7 +17,7 @@ use InvalidArgumentException;
 use DocumentStore\DocumentStore;
 use Encryption\Exception\NotFoundException;
 
-class KeyChain
+class Keychain
 {
     /**
      * Database
@@ -46,7 +46,7 @@ class KeyChain
     }
 
     /**
-     * Creates a new KeyPair and adds to the KeyChain
+     * Creates a new KeyPair and adds to the Keychain
      *
      * @param string $name
      * @param array $options The following options keys are supported
@@ -69,7 +69,7 @@ class KeyChain
     }
 
     /**
-     * Checks if a Key exists in the KeyChain
+     * Checks if a Key exists in the Keychain
      *
      * @param string $name
      * @return boolean
@@ -80,7 +80,7 @@ class KeyChain
     }
 
     /**
-     * Imports an item into the KeyChain
+     * Imports an item into the Keychain
      *
      * @param string $name A unique name which you will use to lookup values, e.g. username, email address or UUID etc
      * @param string $keyFile path to key public key or private/public key file
@@ -130,7 +130,7 @@ class KeyChain
     }
 
     /**
-     * Returns a list of Key IDs in the KeyChain
+     * Returns a list of Key IDs in the Keychain
      *
      * @return array
      */
@@ -140,7 +140,7 @@ class KeyChain
     }
 
     /**
-     * Deletes a Key from the KeyChain
+     * Deletes a Key from the Keychain
      *
      * @param string $name
      * @return boolean

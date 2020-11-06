@@ -122,17 +122,17 @@ To verify the signature
 $bool = (new AsymmetricEncryption())-verify($data, $signature, $publicKey);
 ```
 
-### KeyChain
+### Keychain
 
-You can also manage keys with `KeyChain`
+You can also manage keys with `Keychain`
 
 ```php
-$keyChain = new KeyChain(__DIR__ . '/keys');
+$keyChain = new Keychain(__DIR__ . '/keys');
 ```
 
 #### Creating keys and adding to the Key Chain
 
-To create a private and public key pair and add this to the `KeyChain`, you can pass an
+To create a private and public key pair and add this to the `Keychain`, you can pass an
 email address, username, UUID or any other unique id.
 
 ```php

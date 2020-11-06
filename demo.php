@@ -1,13 +1,13 @@
 <?php
 
-use Encryption\KeyChain;
+use Encryption\Keychain;
 use Encryption\AsymmetricEncryption;
 
 require __DIR__ . '/vendor/autoload.php';
 
 $path = __DIR__ . '/demo';
 @mkdir($path);
-$keyChain = new KeyChain($path);
+$keyChain = new Keychain($path);
 
 $keyChain->create('demo@example.com');
 
