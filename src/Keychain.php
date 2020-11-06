@@ -136,7 +136,7 @@ class Keychain
      */
     public function list(): array
     {
-        return $this->documentStore->list();
+        return $this->documentStore->list('', false);
     }
 
     /**
