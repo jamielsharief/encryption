@@ -9,3 +9,4 @@
 /phpcs.xml.dist export-ignore
 /CHANGELOG.md export-ignore
 /README.md export-ignore
+demo.php export-ignore
