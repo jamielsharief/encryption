@@ -54,9 +54,9 @@ class Keychain
      *  - passphrase: An optional passphrase to use for the private key
      *  - algo:  default: sha512. digest algo. see openssl_get_md_methods()
      *  - expires: a strtotime compatible string on when the key can be used until
-     *  - meta: an array of additional meta data which will be added
-    * @return bool
-    */
+     *  - comment: additional information can be put here
+     * @return bool
+     */
     public function create(string $name, array $options = []): bool
     {
         $keyPair = (new AsymmetricEncryption())->generateKeyPair($options);
