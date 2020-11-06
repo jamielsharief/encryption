@@ -74,7 +74,7 @@ class KeyChain
      * @param string $name
      * @return boolean
      */
-    public function exists(string $name): bool
+    public function has(string $name): bool
     {
         return $this->documentStore->has($name);
     }

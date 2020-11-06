@@ -68,8 +68,8 @@ class KeyChainTest extends \PHPUnit\Framework\TestCase
     {
         $keyChain = $this->keyChain();
         $this->assertTrue($keyChain->create(self::USERNAME));
-        $this->assertTrue($keyChain->exists(self::USERNAME));
-        $this->assertFalse($keyChain->exists('you@yourdomain.com'));
+        $this->assertTrue($keyChain->has(self::USERNAME));
+        $this->assertFalse($keyChain->has('you@yourdomain.com'));
     }
 
     public function testList()
