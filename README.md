@@ -8,6 +8,8 @@ This library supports both Asymmetric (using key pairs) and Symmetric (single ke
 
 ## Asymmetric Encryption
 
+Generating private and public key pairs.
+
 ### Generating a Public/Private Key Pair
 
 To generate a public/private key pair
@@ -64,6 +66,22 @@ To export both the public and private key from the key pair
 
 ```php
 $keypair->export('/Users/james/code/public/james.ppk' , true);
+```
+
+### Generating a Private Key
+
+You can also generate just a private key
+
+```php
+$privateKey = $crypto->generatePrivateKey();
+```
+
+### Getting the Public Key from a Private Key
+
+To get a public key
+
+```php
+$publicKey = $crypto->extractPublicKey($privateKey);
 ```
 
 ### Encrypting
