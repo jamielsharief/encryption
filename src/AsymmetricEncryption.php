@@ -27,16 +27,19 @@ class AsymmetricEncryption
      *
      * @param string $data
      * @param string $publicKey
+     * @param boolean $addBoundaries
      * @return string
      */
-    public function encrypt(string $data, string $publicKey): string
+    public function encrypt(string $data, string $publicKey, bool $addBoundaries = true): string
     {
         openssl_public_encrypt($data, $encrypted, $publicKey);
         if ($encrypted === null) {
             throw new EncryptionException('Unable to encrypt data with key');
         }
 
-        return $this->addBoundaries(base64_encode($encrypted), 'ENCRYPTED DATA');
+        $encoded = base64_encode($encrypted);
+
+        return $addBoundaries ? $this->addBoundaries($encoded, 'ENCRYPTED DATA') :  $encoded ;
     }
 
     /**
@@ -84,6 +87,26 @@ class AsymmetricEncryption
     public function generateKeyPair(array $options = []): KeyPair
     {
         $options += ['size' => 2048, 'passphrase' => null,'algo' => 'sha512'];
+
+        $privateKey = $this->generatePrivateKey($options);
+        $publicKey = $this->extractPublicKey($privateKey, $options['passphrase']);
+
+        return new KeyPair($publicKey, $privateKey);
+    }
+
+    /**
+     * Generates a new private key.
+     *
+     * @param array $options The following options keys are supported
+     *   - size: default: 2048. Key sizes e.g 1024,2048,3072,4096
+     *   - passphrase: An optional passphrase to use for the private key
+     *   - algo:  default: sha512. digest algo. see openssl_get_md_methods()
+     *
+     * @return string
+     */
+    public function generatePrivateKey(array $options = []): string
+    {
+        $options += ['size' => 2048, 'passphrase' => null,'algo' => 'sha512'];
      
         // @see https://www.php.net/manual/en/function.openssl-csr-new.php
         $keyPair = openssl_pkey_new([
@@ -94,9 +117,26 @@ class AsymmetricEncryption
         ]);
 
         openssl_pkey_export($keyPair, $privateKey, $options['passphrase']);
-        $keyDetails = openssl_pkey_get_details($keyPair);
 
-        return new KeyPair($keyDetails['key'], $privateKey);
+        return $privateKey;
+    }
+
+    /**
+     * Extracts a public key from a private key
+     *
+     * @param string $privateKey
+     * @param string $passphrase
+     * @return string
+     */
+    public function extractPublicKey(string $privateKey, string $passphrase = null): string
+    {
+        $resource = openssl_pkey_get_private($privateKey, $passphrase);
+        if (! $resource) {
+            throw new EncryptionException('Invalid private key');
+        }
+        $keyDetails = openssl_pkey_get_details($resource);
+
+        return $keyDetails['key'];
     }
 
     /**
@@ -144,10 +184,12 @@ class AsymmetricEncryption
      */
     public function fingerprint(string $publicKey): string
     {
-        preg_match(self::BOUNDARY_PATTERN, $publicKey, $matches);
-        $fingerprint = strtoupper(hash('sha1', $matches[1]));
+        if (preg_match(self::BOUNDARY_PATTERN, $publicKey, $matches)) {
+            $fingerprint = strtoupper(hash('sha1', $matches[1]));
 
-        return trim(chunk_split($fingerprint, 4, ' '));
+            return trim(chunk_split($fingerprint, 4, ' '));
+        }
+        throw new EncryptionException('Invalid key');
     }
 
     /**

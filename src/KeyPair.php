@@ -68,4 +68,14 @@ class KeyPair
 
         return file_put_contents($file, $out);
     }
+
+    /**
+     * TODO: add to test
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->privateKey . PHP_EOL . $this->publicKey;
+    }
 }

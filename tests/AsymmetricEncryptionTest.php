@@ -33,7 +33,7 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $keyPair = $crypto->generateKeyPair(['size' => 2048,'algo' => 'sha256']);
         $string = 'Every cloud has a silver lining';
         $signature = $crypto->sign($string, $keyPair->privateKey());
-
+        
         $this->assertTrue($crypto->verify($string, $signature, $keyPair->publicKey()));
         $this->assertFalse($crypto->verify($string.'f', $signature, $keyPair->publicKey()));
     }

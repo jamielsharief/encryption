@@ -104,7 +104,7 @@ class Keychain
             'name' => $name,
             'privateKey' => $keyPair['private'],
             'publicKey' => $keyPair['public'],
-            'fingerprint' => (new AsymmetricEncryption)->fingerprint($keyPair['public']),
+            'fingerprint' => $keyPair['public'] ? (new AsymmetricEncryption)->fingerprint($keyPair['public']) : null,
             'expires' => $options['expires'] ? date('Y-m-d H:i:s', strtotime($options['expires'])) : null,
             'type' => empty($keyPair['private']) ? 'public-key' : 'key-pair',
             'comment' => $options['comment'],
@@ -173,6 +173,9 @@ class Keychain
         if ($position) {
             $privateKey = substr($string, 0, $position + 5);
             $publicKey = substr($string, $position + 6);
+        } elseif (strpos($string, 'PRIVATE KEY') !== false) {
+            $privateKey = $publicKey;
+            $publicKey = null;
         }
 
         return [
