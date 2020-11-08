@@ -54,20 +54,6 @@ To generate the fingerprint of any public key
 $fingerprint = (new AsymmetricEncryption())->fingerprint($publicKey);
 ```
 
-#### Exporting Keys
-
-To export your public key from the key pair
-
-```php
-$keypair->export('/Users/james/code/public/james.pub');
-```
-
-To export both the public and private key from the key pair
-
-```php
-$keypair->export('/Users/james/code/public/james.ppk' , true);
-```
-
 ### Generating a Private Key
 
 You can also generate just a private key

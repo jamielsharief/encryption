@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] 
+
+
+### Removed
+
+- Removed KeyPair export as this was confusing
+
+### Changed
+
+- Changed KeyPair construct argument order
+
+### Fixed
+
+- Fixed Fingerprint which generated incorrect fingerprint if user passed either a private key or both a private and public key
+
 ## [0.3.0] - 2020-11-07
 
 ### Added

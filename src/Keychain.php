@@ -19,6 +19,7 @@ use Encryption\Exception\NotFoundException;
 
 class Keychain
 {
+    use EncryptionTrait;
     /**
      * Database
      *
@@ -62,7 +63,8 @@ class Keychain
         $keyPair = (new AsymmetricEncryption())->generateKeyPair($options);
 
         $tmpFile = sys_get_temp_dir() . '/' . uniqid() .'.tmp';
-        $keyPair->export($tmpFile, true);
+        file_put_contents($tmpFile, (string) $keyPair);
+
         $this->import($name, $tmpFile, $options);
 
         return $this->documentStore->has($name);
@@ -97,7 +99,7 @@ class Keychain
             throw new NotFoundException('File does not exist');
         }
         $keyData = file_get_contents($keyFile);
-        $keyPair = $this->toArray(trim($keyData)); // remove lineendings
+        $keyPair = $this->fromString($keyData); // remove lineendings
 
         $document = new Document([
             'id' => $this->keyId($name),
@@ -152,35 +154,5 @@ class Keychain
         } catch (\DocumentStore\Exception\NotFoundException $exception) {
             throw new NotFoundException("{$name} was not found");
         }
-    }
-
-    /**
-     * Converts Key or Key pair to an array
-     * @link https://blog.programster.org/key-file-formats
-     *
-     * @param string $secretPublicKey
-     * @return void
-     */
-    protected function toArray(string $string)
-    {
-        if (! preg_match('/^-----BEGIN (.*) KEY-----$/m', $string)) {
-            throw new InvalidArgumentException('Invalid Key');
-        }
-        $position = strpos($string, "-----\n-----");
-        $publicKey = $string;
-        $privateKey = null;
-
-        if ($position) {
-            $privateKey = substr($string, 0, $position + 5);
-            $publicKey = substr($string, $position + 6);
-        } elseif (strpos($string, 'PRIVATE KEY') !== false) {
-            $privateKey = $publicKey;
-            $publicKey = null;
-        }
-
-        return [
-            'private' => $privateKey,
-            'public' => $publicKey
-        ];
     }
 }

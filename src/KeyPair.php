@@ -14,13 +14,17 @@ namespace Encryption;
 
 class KeyPair
 {
-    private $publicKey;
     private $privateKey;
+    private $publicKey;
     
-    public function __construct(string $publicKey, string $privateKey)
+    /**
+     * @param string $privateKey
+     * @param string $publicKey
+     */
+    public function __construct(string $privateKey, string $publicKey)
     {
-        $this->publicKey = trim($publicKey);
         $this->privateKey = trim($privateKey);
+        $this->publicKey = trim($publicKey);
     }
 
     /**
@@ -48,7 +52,7 @@ class KeyPair
     /**
      * Gets the public key fingerprint
      *
-     * @return string e.g. D52A E482 CBE7 BB75 0148  3851 93A3 910A 0719 994D
+     * @return string e.g. D52A E482 CBE7 BB75 0148 3851 93A3 910A 0719 994D
      */
     public function fingerprint(): string
     {
@@ -56,22 +60,6 @@ class KeyPair
     }
 
     /**
-     * Exports the public key (and private key)
-     *
-     * @param string $file
-     * @param boolean $includePrivateKey
-     * @return boolean
-     */
-    public function export(string $file, bool $includePrivateKey = false): bool
-    {
-        $out = $includePrivateKey ? $this->privateKey . PHP_EOL . $this->publicKey : $this->publicKey;
-
-        return file_put_contents($file, $out);
-    }
-
-    /**
-     * TODO: add to test
-     *
      * @return string
      */
     public function __toString()

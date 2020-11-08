@@ -12,10 +12,16 @@
  */
 namespace Encryption\Test;
 
+use Encryption\KeyPair;
+
 class KeyPairTest extends \PHPUnit\Framework\TestCase
 {
     public function testToString()
     {
-        $this->markTestIncomplete();
+        $publicKey = file_get_contents(__DIR__ . '/fixture/public.key');
+        $privateKey = file_get_contents(__DIR__ . '/fixture/private.key');
+        $keyPair = new KeyPair($privateKey, $publicKey);
+    
+        $this->assertSame($keyPair->privateKey() . PHP_EOL . $keyPair->publicKey(), (string) $keyPair);
     }
 }

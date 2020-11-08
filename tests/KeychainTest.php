@@ -105,7 +105,8 @@ class KeychainTest extends \PHPUnit\Framework\TestCase
         $crypto = new AsymmetricEncryption();
         $keyPair = $crypto->generateKeyPair();
         $tmpFile = sys_get_temp_dir() . '/' . uniqid();
-        $keyPair->export($tmpFile, false);
+        file_put_contents($tmpFile, $keyPair->publicKey());
+
         $keyChain = $this->keyChain();
         $this->assertTrue($keyChain->import(self::USERNAME, $tmpFile));
         $key = $keyChain->get(self::USERNAME);
@@ -119,7 +120,8 @@ class KeychainTest extends \PHPUnit\Framework\TestCase
         $crypto = new AsymmetricEncryption();
         $keyPair = $crypto->generateKeyPair();
         $tmpFile = sys_get_temp_dir() . '/' . uniqid();
-        $keyPair->export($tmpFile, true);
+        file_put_contents($tmpFile, (string) $keyPair);
+        
         $keyChain = $this->keyChain();
         $this->assertTrue($keyChain->import(self::USERNAME, $tmpFile));
         $key = $keyChain->get(self::USERNAME);

@@ -101,8 +101,8 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
     {
         $publicKey = file_get_contents(__DIR__ . '/fixture/public.key');
         $privateKey = file_get_contents(__DIR__ . '/fixture/private.key');
-        $keypair = new KeyPair($publicKey, $privateKey);
-        $this->assertEquals('9C94 5F9A 7BBB 171D D988 3816 15B3 4199 8367 CFA3', $keypair->fingerprint());
+        $keyPair = new KeyPair($privateKey, $publicKey);
+        $this->assertEquals('9C94 5F9A 7BBB 171D D988 3816 15B3 4199 8367 CFA3', $keyPair->fingerprint());
         $this->assertEquals('9C94 5F9A 7BBB 171D D988 3816 15B3 4199 8367 CFA3', (new AsymmetricEncryption())->fingerprint($publicKey));
     }
 
@@ -122,6 +122,19 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $privateKey = str_replace('YRP', 'foo', $privateKey);
         $this->expectException(EncryptionException::class);
         $crypto->decrypt('foo', $privateKey);
+    }
+
+    public function testEncryptDecryptNoBoundaries()
+    {
+        $crypto = new AsymmetricEncryption();
+        
+        $publicKey = file_get_contents(__DIR__ . '/fixture/public.key');
+        $encrypted = $crypto->encrypt('foo', $publicKey, false);
+        $this->assertStringNotContainsString('-----BEGIN ENCRYPTED DATA-----', $encrypted);
+
+        $privateKey = file_get_contents(__DIR__ . '/fixture/private.key');
+       
+        $this->assertEquals('foo', $crypto->decrypt($encrypted, $privateKey));
     }
 
     public function testEncryptPassphrase()
@@ -147,18 +160,5 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
 
         $privateKey = file_get_contents(__DIR__ . '/fixture/private-pass.key');
         $crypto->decrypt($encrypted, $privateKey, 'bar');
-    }
-
-    public function testExport()
-    {
-        $keyPair = (new AsymmetricEncryption())->generateKeyPair();
-        $tmp = sys_get_temp_dir() . '/'.  uniqid();
-        $this->assertTrue($keyPair->export($tmp));
-        $this->assertSame($keyPair->publicKey(), file_get_contents($tmp));
-
-        $tmp = sys_get_temp_dir() . '/'.  uniqid();
-        $this->assertTrue($keyPair->export($tmp, true));
-        $expected = $keyPair->privateKey() . PHP_EOL . $keyPair->publicKey();
-        $this->assertSame($expected, file_get_contents($tmp));
     }
 }

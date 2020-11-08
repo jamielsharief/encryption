@@ -20,6 +20,8 @@ use Encryption\Exception\EncryptionException;
  */
 class AsymmetricEncryption
 {
+    use EncryptionTrait;
+
     const BOUNDARY_PATTERN = "#-----\r?\n(.*)\r?\n-----#s";
     /**
      * Encrypts a string. Data is encrypted with OpenSSL, and the encrypted binary data
@@ -91,7 +93,7 @@ class AsymmetricEncryption
         $privateKey = $this->generatePrivateKey($options);
         $publicKey = $this->extractPublicKey($privateKey, $options['passphrase']);
 
-        return new KeyPair($publicKey, $privateKey);
+        return new KeyPair($privateKey, $publicKey);
     }
 
     /**
@@ -174,7 +176,7 @@ class AsymmetricEncryption
     {
         $signature = $this->removeBoundaries($signature);
 
-        return openssl_verify($data, base64_decode($signature), $publicKey, 'sha256WithRSAEncryption');
+        return openssl_verify($data, base64_decode($signature), $publicKey, 'sha256WithRSAEncryption') > 0;
     }
 
     /**
@@ -184,11 +186,14 @@ class AsymmetricEncryption
      */
     public function fingerprint(string $publicKey): string
     {
-        if (preg_match(self::BOUNDARY_PATTERN, $publicKey, $matches)) {
-            $fingerprint = strtoupper(hash('sha1', $matches[1]));
+        $keys = $this->fromString($publicKey);
 
+        if ($keys['public']) {
+            $fingerprint = strtoupper(hash('sha1', $this->removeBoundaries($keys['public'])));
+    
             return trim(chunk_split($fingerprint, 4, ' '));
         }
+       
         throw new EncryptionException('Invalid key');
     }
 
@@ -207,7 +212,6 @@ class AsymmetricEncryption
      * Removes the BEGIN/END ENCRYPTED DATA boundaries.
      *
      * @param string $data
-     * @param string $boundary
      * @return string
      */
     private function removeBoundaries(string $data): string
