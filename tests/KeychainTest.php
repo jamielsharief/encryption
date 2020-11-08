@@ -115,6 +115,17 @@ class KeychainTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('public-key', $key->type);
     }
 
+    public function testImportPrivateOnly()
+    {
+        $keyChain = $this->keyChain();
+        $this->assertTrue($keyChain->import(self::USERNAME, __DIR__ . '/fixture/private.key'));
+        $key = $keyChain->get(self::USERNAME);
+
+        $this->assertStringContainsString('---BEGIN PRIVATE KEY', $key->privateKey);
+        $this->assertStringContainsString('---BEGIN PUBLIC KEY', $key->publicKey);
+        $this->assertEquals('key-pair', $key->type);
+    }
+
     public function testImport()
     {
         $crypto = new AsymmetricEncryption();

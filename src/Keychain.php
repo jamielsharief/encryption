@@ -101,12 +101,18 @@ class Keychain
         $keyData = file_get_contents($keyFile);
         $keyPair = $this->fromString($keyData); // remove lineendings
 
+        $encryption = new AsymmetricEncryption();
+
+        if ($keyPair['private'] && empty($keyPair['public'])) {
+            $keyPair['public'] = $encryption->extractPublicKey($keyPair['private']);
+        }
+
         $document = new Document([
             'id' => $this->keyId($name),
             'name' => $name,
             'privateKey' => $keyPair['private'],
             'publicKey' => $keyPair['public'],
-            'fingerprint' => $keyPair['public'] ? (new AsymmetricEncryption)->fingerprint($keyPair['public']) : null,
+            'fingerprint' => $keyPair['public'] ?  $encryption->fingerprint($keyPair['public']) : null,
             'expires' => $options['expires'] ? date('Y-m-d H:i:s', strtotime($options['expires'])) : null,
             'type' => empty($keyPair['private']) ? 'public-key' : 'key-pair',
             'comment' => $options['comment'],
