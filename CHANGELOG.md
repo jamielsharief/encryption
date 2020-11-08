@@ -8,14 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] 
 
-
 ### Removed
 
 - Removed KeyPair export as this was confusing
 
 ### Changed
 
-- Changed KeyPair construct argument order
+- Changed KeyPair construct argument order - Breaking change if have used this class.
 
 ### Fixed
 

@@ -60,10 +60,20 @@ class KeyPair
     }
 
     /**
+     * Converts the KeyPair to a string
+     *
+     * @return string
+     */
+    public function toString(): string
+    {
+        return $this->privateKey . PHP_EOL . $this->publicKey;
+    }
+
+    /**
      * @return string
      */
     public function __toString()
     {
-        return $this->privateKey . PHP_EOL . $this->publicKey;
+        return $this->toString();
     }
 }

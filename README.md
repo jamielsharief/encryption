@@ -22,6 +22,7 @@ $keyPair = $crypto->generateKeyPair();
 
 $publicKey = $keyPair->publicKey(); // this is used to encrypt data
 $privateKey = $keyPair->privateKey(); // this is to decrypt data
+$string = $keyPair->toString(); // combines both key into a single string
 ```
 
 The default key size is 2048, however you can change this when generating a key pair.
@@ -37,6 +38,7 @@ To encrypt your private key with a passphrase
 $crypto = new AsymmetricEncryption();
 $keyPair = $crypto->generateKeyPair(['passphrase'=>'d0b5e608b9223b4564d3c075c1b97906']);
 ```
+
 
 #### Fingerprint
 
