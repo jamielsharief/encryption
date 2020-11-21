@@ -33,7 +33,7 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $keyPair = $crypto->generateKeyPair(['size' => 2048,'algo' => 'sha256']);
         $string = 'Every cloud has a silver lining';
         $signature = $crypto->sign($string, $keyPair->privateKey());
-        
+
         $this->assertTrue($crypto->verify($string, $signature, $keyPair->publicKey()));
         $this->assertFalse($crypto->verify($string.'f', $signature, $keyPair->publicKey()));
     }
@@ -56,8 +56,9 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $crypto = new AsymmetricEncryption();
         $keyPair = $crypto->generateKeyPair(['size' => 1024,'passphrase' => 'secret']);
         $string = 'Every cloud has a silver lining';
+      
         $signature = $crypto->sign($string, $keyPair->privateKey(), 'foo');
-
+  
         $this->assertFalse($crypto->verify($string, $signature, $keyPair->publicKey()));
     }
 
@@ -65,6 +66,7 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
     {
         $crypto = new AsymmetricEncryption();
         $keyPair = $crypto->generateKeyPair(['passphrase' => 'foo']);
+
         $this->assertStringContainsString('-----BEGIN ENCRYPTED PRIVATE KEY-----', $keyPair->privateKey());
         $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $keyPair->publicKey());
 
@@ -79,9 +81,9 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
      */
     public function testGenerateKeyPairBits()
     {
-        $this->expectError(ErrorException::class);
         $crypto = new AsymmetricEncryption();
-        $keyPair = $crypto->generateKeyPair(['size' => -1]);
+        $this->expectError(ErrorException::class);
+        $crypto->generateKeyPair(['size' => -1]);
     }
 
     /**
@@ -160,5 +162,19 @@ class AsymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
 
         $privateKey = file_get_contents(__DIR__ . '/fixture/private-pass.key');
         $crypto->decrypt($encrypted, $privateKey, 'bar');
+    }
+
+    public function testGeneratePrivateKey()
+    {
+        $crypto = new AsymmetricEncryption();
+
+        $this->assertStringContainsString('-----BEGIN PRIVATE KEY----', $crypto->generatePrivateKey());
+    }
+
+    public function testExtractPublicKey()
+    {
+        $crypto = new AsymmetricEncryption();
+        $privateKey = $crypto->generatePrivateKey();
+        $this->assertStringContainsString('-----BEGIN PUBLIC KEY-----', $crypto->extractPublicKey($privateKey));
     }
 }

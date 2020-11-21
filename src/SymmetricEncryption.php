@@ -10,6 +10,7 @@
  * @copyright   Copyright (c) Jamiel Sharief
  * @license     https://opensource.org/licenses/mit-license.php MIT License
  */
+declare(strict_types = 1);
 namespace Encryption;
 
 use InvalidArgumentException;
@@ -27,7 +28,7 @@ class SymmetricEncryption
     const CIPHER = 'AES-256-CBC';
 
     /**
-     * Encrypts a string using your key. The key should be secure use. generateKey
+     * Encrypts a string using your key. The key should be secure use generateKey
      *
      * @see http://php.net/manual/en/function.openssl-encrypt.php
      * @param string $string

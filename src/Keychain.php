@@ -10,16 +10,18 @@
  * @copyright   Copyright (c) Jamiel Sharief
  * @license     https://opensource.org/licenses/mit-license.php MIT License
  */
+declare(strict_types = 1);
 namespace Encryption;
 
 use DocumentStore\Document;
 use InvalidArgumentException;
 use DocumentStore\DocumentStore;
 use Encryption\Exception\NotFoundException;
+use Encryption\Exception\EncryptionException;
 
 class Keychain
 {
-    use EncryptionTrait;
+
     /**
      * Database
      *
@@ -51,7 +53,7 @@ class Keychain
      *
      * @param string $name
      * @param array $options The following options keys are supported
-     *  - size: default: 2048. Key sizes e.g 1024,2048,3072,4096
+     *  - size: default:4096. Key sizes e.g 1024,2048,3072,4096
      *  - passphrase: An optional passphrase to use for the private key
      *  - algo:  default: sha512. digest algo. see openssl_get_md_methods()
      *  - expires: a strtotime compatible string on when the key can be used until
@@ -60,14 +62,44 @@ class Keychain
      */
     public function create(string $name, array $options = []): bool
     {
-        $keyPair = (new AsymmetricEncryption())->generateKeyPair($options);
+        $options += ['size' => 4096];
+       
+        return $this->add($name, (string) PrivateKey::generate($options), $options);
+    }
 
-        $tmpFile = sys_get_temp_dir() . '/' . uniqid() .'.tmp';
-        file_put_contents($tmpFile, (string) $keyPair);
+    /**
+     * Adds private/public key to the Keychain
+     *
+     * @param string $name
+     * @param string $key
+     * @param array $options The following options keys are supported
+     *  - expires: a strtotime compatible string on when the key can be used until
+     *  - comment: additional info
+     * @return bool
+     */
+    public function add(string $name, string $key, array $options = []): bool
+    {
+        $options += ['expires' => null,'comment' => null];
 
-        $this->import($name, $tmpFile, $options);
+        $keyPair = $this->fromString($key); // remove line endings
 
-        return $this->documentStore->has($name);
+        if ($keyPair['private'] && empty($keyPair['public'])) {
+            $keyPair['public'] = (new PrivateKey($keyPair['private']))->extractPublicKey()->toString();
+        }
+
+        $document = new Document([
+            'id' => $this->keyId($name),
+            'name' => $name,
+            'privateKey' => $keyPair['private'],
+            'publicKey' => $keyPair['public'],
+            'fingerprint' => (new PublicKey($keyPair['public']))->fingerprint(),
+            'expires' => $options['expires'] ? date('Y-m-d H:i:s', strtotime($options['expires'])) : null,
+            'type' => empty($keyPair['private']) ? 'public-key' : 'key-pair',
+            'comment' => $options['comment'],
+            'created' => date('Y-m-d H:i:s')
+        ]);
+
+        return $this->documentStore->set($name, $document);
     }
 
     /**
@@ -93,33 +125,11 @@ class Keychain
      */
     public function import(string $name, string $keyFile, array $options = []): bool
     {
-        $options += ['expires' => null,'comment' => null];
-
         if (! file_exists($keyFile)) {
             throw new NotFoundException('File does not exist');
         }
-        $keyData = file_get_contents($keyFile);
-        $keyPair = $this->fromString($keyData); // remove lineendings
-
-        $encryption = new AsymmetricEncryption();
-
-        if ($keyPair['private'] && empty($keyPair['public'])) {
-            $keyPair['public'] = $encryption->extractPublicKey($keyPair['private']);
-        }
-
-        $document = new Document([
-            'id' => $this->keyId($name),
-            'name' => $name,
-            'privateKey' => $keyPair['private'],
-            'publicKey' => $keyPair['public'],
-            'fingerprint' => $keyPair['public'] ?  $encryption->fingerprint($keyPair['public']) : null,
-            'expires' => $options['expires'] ? date('Y-m-d H:i:s', strtotime($options['expires'])) : null,
-            'type' => empty($keyPair['private']) ? 'public-key' : 'key-pair',
-            'comment' => $options['comment'],
-            'created' => date('Y-m-d H:i:s')
-        ]);
-
-        return $this->documentStore->set($name, $document);
+ 
+        return $this->add($name, file_get_contents($keyFile), $options);
     }
 
     /**
@@ -160,5 +170,48 @@ class Keychain
         } catch (\DocumentStore\Exception\NotFoundException $exception) {
             throw new NotFoundException("{$name} was not found");
         }
+    }
+
+    /**
+     * Parses a key or key pair into an array, different key types have different boundaries
+     * e.g. BEGIN PRIVATE KEY, BEGIN ENCRYPTED PRIVATE KEY (with passphrase)
+     *
+     * @link https://blog.programster.org/key-file-formats
+     *
+     * @param string $string
+     * @return array
+     */
+    protected function fromString(string $string): array
+    {
+        $string = trim($string);
+            
+        $out = [];
+        $current = '';
+        foreach (explode("\n", $string) as $line) {
+            $current .= $line . PHP_EOL;
+            if (strpos($line, '-----END') !== false && strpos($current, '-----BEGIN') !== false) {
+                $out[] = trim($current);
+                $current = '';
+            }
+        }
+    
+        $found = count($out);
+        if ($found < 1 || $found > 2) {
+            throw new EncryptionException('Invalid key or keys');
+        }
+    
+        $privateKey = $publicKey = null;
+        foreach ($out as $key) {
+            if (strpos($key, 'PUBLIC KEY') !== false) {
+                $publicKey = $key;
+            } elseif (strpos($key, 'PRIVATE KEY') !== false) {
+                $privateKey = $key;
+            }
+        }
+    
+        return [
+            'private' => $privateKey,
+            'public' => $publicKey
+        ];
     }
 }

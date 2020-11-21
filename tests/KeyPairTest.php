@@ -24,4 +24,16 @@ class KeyPairTest extends \PHPUnit\Framework\TestCase
     
         $this->assertSame($keyPair->privateKey() . PHP_EOL . $keyPair->publicKey(), (string) $keyPair);
     }
+
+    public function testGenerate()
+    {
+        $this->assertInstanceOf(KeyPair::class, KeyPair::generate());
+    }
+
+    public function testGenerateWithPassphrase()
+    {
+        $keyPair = KeyPair::generate(['passphrase' => 'foo']);
+        $this->assertInstanceOf(KeyPair::class, $keyPair);
+        $this->assertStringContainsString('-----BEGIN ENCRYPTED PRIVATE KEY-----', $keyPair->privateKey());
+    }
 }

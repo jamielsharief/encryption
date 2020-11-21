@@ -1,7 +1,8 @@
 <?php
 
 use Encryption\Keychain;
-use Encryption\AsymmetricEncryption;
+use Encryption\PublicKey;
+use Encryption\PrivateKey;
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -19,9 +20,11 @@ $document = $keyChain->get('demo@example.com');
 print_r($document);
 
 echo "\nEncrypted text:\n";
-$crypto = new AsymmetricEncryption();
-$encrypted = $crypto->encrypt('foo', $document['publicKey']);
+$publicKey = new PublicKey($document->publicKey);
+$privateKey = new PrivateKey($document->privateKey);
+
+$encrypted = $publicKey->encrypt('foo');
 echo $encrypted . PHP_EOL;
 
 echo "\nDecrypted text:\n";
-echo $crypto->decrypt($encrypted, $document['privateKey']);
+echo $privateKey->decrypt($encrypted);

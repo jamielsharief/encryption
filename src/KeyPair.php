@@ -10,11 +10,19 @@
  * @copyright   Copyright (c) Jamiel Sharief
  * @license     https://opensource.org/licenses/mit-license.php MIT License
  */
+declare(strict_types = 1);
 namespace Encryption;
 
 class KeyPair
 {
+    /**
+     * @var string
+     */
     private $privateKey;
+
+    /**
+     * @var string
+     */
     private $publicKey;
     
     /**
@@ -28,11 +36,33 @@ class KeyPair
     }
 
     /**
-     * Gets the Public Key from the KeyPair, this you can make publically
-     * available as this is used to encrypt the messages.
-     *
-     * @return string
-     */
+       * Generates a new private and public key. The public key is used for encryption, this what
+       * you give to other people. The private key is used for decryption, this you keep safe and
+       * is only for you.
+       *
+       * @param array $options The following options keys are supported
+       *   - size: default: 4096. Key sizes e.g 1024,2048,3072,4096
+       *   - passphrase: An optional passphrase to use for the private key
+       *   - algo:  default: sha512. digest algo. see openssl_get_md_methods()
+       *
+       * @return \Encryption\KeyPair
+       */
+    public static function generate(array $options = []): KeyPair
+    {
+        $options += ['size' => 4096, 'passphrase' => null,'algo' => 'sha512'];
+
+        $privateKey = PrivateKey::generate($options);
+        $publicKey = $privateKey->extractPublicKey();
+
+        return new KeyPair((string) $privateKey, (string) $publicKey);
+    }
+
+    /**
+    * Gets the Public Key from the KeyPair, this you can make publically
+    * available as this is used to encrypt the messages.
+    *
+    * @return string
+    */
     public function publicKey(): string
     {
         return $this->publicKey;
@@ -56,7 +86,7 @@ class KeyPair
      */
     public function fingerprint(): string
     {
-        return (new AsymmetricEncryption)->fingerprint($this->publicKey);
+        return (new PublicKey($this->publicKey))->fingerprint();
     }
 
     /**

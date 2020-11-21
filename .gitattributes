@@ -10,3 +10,4 @@
 /CHANGELOG.md export-ignore
 /README.md export-ignore
 demo.php export-ignore
+phpstan.neon export-ignore

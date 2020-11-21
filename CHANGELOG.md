@@ -5,6 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.1.0] - 2020-11-21
+
+### Changed
+
+- Changed Keychain::create default key size to 4096
+
+### Added
+
+- Added Keychain::add
+- Added KeyPair::generate
+- Added PrivateKey object
+- Added PublicKey object
+
+### Security
+
+- The AsymmetricEncrytion wrapper does not use OEP Padding, migrate to use the PrivateKey and PublicKey objects
+
 ## [1.0.0] - 2020-11-08
 
 ### Added
