@@ -12,7 +12,7 @@ Upcoming 2.0 changes
 - [ ] Make min 7.4
 - [ ] Adjust Hybrid to toggle base64 instead of decode
 
-## [1.2.0] - 2020-11-22
+## [1.2.0] - 2020-12-22
 
 ### Added
 
