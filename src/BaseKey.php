@@ -108,22 +108,4 @@ abstract class BaseKey
     {
         return $this->useOAEPPadding ? OPENSSL_PKCS1_OAEP_PADDING : OPENSSL_PKCS1_PADDING;
     }
-
-    /**
-     * @param string $data
-     * @return string
-     */
-    protected function encodeData(string $data): string
-    {
-        return $this->encodeData ? base64_encode($data) : $data;
-    }
-
-    /**
-     * @param string $data
-     * @return string
-     */
-    protected function decodeData(string $data): string
-    {
-        return $this->encodeData ? base64_decode($data) : $data;
-    }
 }
