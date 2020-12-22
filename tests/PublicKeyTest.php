@@ -44,7 +44,7 @@ class PublicKeyTest extends \PHPUnit\Framework\TestCase
         $privateKey = PrivateKey::load(__DIR__ .'/fixture/privateKey');
         $publicKey = PublicKey::load(__DIR__ .'/fixture/publicKey');
 
-        $encrypted = $publicKey->encrypt($original);
+        $encrypted = $publicKey->encrypt($original, ['addBoundaries' => true]);
         $this->assertStringContainsString('-----BEGIN ENCRYPTED DATA-----', $encrypted);
         $this->assertEquals($original, $privateKey->decrypt($encrypted));
 
@@ -57,7 +57,7 @@ class PublicKeyTest extends \PHPUnit\Framework\TestCase
         $privateKey = PrivateKey::load(__DIR__ .'/fixture/privateKey');
         $publicKey = PublicKey::load(__DIR__ .'/fixture/publicKey');
 
-        $encrypted = $privateKey->encrypt($original);
+        $encrypted = $privateKey->encrypt($original, ['addBoundaries' => true]);
         $this->assertStringContainsString('-----BEGIN ENCRYPTED DATA-----', $encrypted);
         $this->assertEquals($original, $publicKey->decrypt($encrypted));
     }
@@ -72,7 +72,7 @@ class PublicKeyTest extends \PHPUnit\Framework\TestCase
     {
         $privateKey = PrivateKey::load(__DIR__ .'/fixture/privateKey');
         $publicKey = PublicKey::load(__DIR__ .'/fixture/publicKey');
-        $signature = $privateKey->sign('foo');
+        $signature = $privateKey->sign('foo', ['addBoundaries' => true]);
        
         $this->assertTrue($publicKey->verify('foo', $signature));
         $this->assertFalse($publicKey->verify('foo', str_replace('e539', 'e530', $signature)));
@@ -85,5 +85,13 @@ class PublicKeyTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals((string) $privateKey->extractPublicKey(), $publicKey->toString());
         $this->assertEquals((string) $privateKey->extractPublicKey(), (string) $publicKey);
+    }
+
+    public function testEncryptTooBig()
+    {
+        $text = file_get_contents(__DIR__ .'/fixture/large.txt');
+        $publicKey = PublicKey::load(__DIR__ .'/fixture/publicKey');
+        $this->expectException(EncryptionException::class);
+        $publicKey->encrypt($text);
     }
 }

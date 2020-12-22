@@ -8,16 +8,6 @@ This library supports both Asymmetric (using key pairs) and Symmetric (single ke
 
 ## Asymmetric Encryption
 
-By default encrypted/signed data is wrapped in a ENCRYPTED DATA or SIGNATURE boundary, however this can be disabled when encrypting or signing data. For example
-
-```text
------BEGIN ENCRYPTED DATA-----
-eGrjYfLFQI/gVWfpZeEA05q7Swb9gaKRalZnBZ788mGXiOhj1+f+a2RLJxDu24FE1HnFd70YcPAAdWme1Lu0yQ==
------END ENCRYPTED DATA-----
-```
-
-Decryption and signature verification will remove boundaries automatically if they are found present in the data.
-
 ### Generating Keys
 
 To generate a key pair
@@ -61,6 +51,7 @@ $encrypted = $privateKey->encrypt($data);
 $decrypted = $privateKey->decrypt($encrypted); // decrypts data encrypted by public key
 $signature = $privateKey->sign($data);
 $publicKey = $privateKey->extractPublicKey();
+$bits = $privateKey->bits(); // 4096
 echo $privateKey->toString();
 ```
 
@@ -94,6 +85,7 @@ $encrypted = $publicKey->encrypt($data);
 $decrypted = $publicKey->decrypt($encrypted); // decrypts data encrypted by private key
 $signature = $publicKey->verify($data, $signature);
 $fingerprint = $publicKey->fingerprint(); // D52A E482 CBE7 BB75 0148 3851 93A3 910A 0719 994D
+$bits = $publicKey->bits(); // 4096
 echo $publicKey->toString();
 ```
 
@@ -225,3 +217,29 @@ To decrypt a string
 $crypto = new SymmetricEncryption();
 $decrypted = $crypto->decrypt($text, $key);
 ```
+
+## Hybrid Encryption
+
+> This can only decrypt data encrypted with the Hybrid Encryption class
+
+Hybrid encryption uses both asymmetric and symmetric encryption. With hybrid encryption there is no limit on message size.
+
+```php
+$publicKey = PublicKey::load($pathToPublicKey);
+$privateKey = PrivateKey::load($pathToPrivateKey);
+
+$crypto = new HybridEncryption();
+
+$encrypted = $crypto->encrypt($data, $publicKey);
+echo $crypto->decrypt($encrypted, $privateKey);
+```
+
+By default encrypted/signed data is wrapped in a ENCRYPTED DATA or SIGNATURE boundary, however this can be disabled when encrypting or signing data. For example
+
+```text
+-----BEGIN ENCRYPTED DATA-----
+eGrjYfLFQI/gVWfpZeEA05q7Swb9gaKRalZnBZ788mGXiOhj1+f+a2RLJxDu24FE1HnFd70YcPAAdWme1Lu0yQ==
+-----END ENCRYPTED DATA-----
+```
+
+Decryption and signature verification will remove boundaries automatically if they are found present in the data.

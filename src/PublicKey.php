@@ -19,9 +19,9 @@ use Encryption\Exception\EncryptionException;
 class PublicKey extends BaseKey
 {
     /**
-    * @param string $publicKey
-    * @param array $options
-    */
+     * @param string $publicKey
+     * @param array $options
+     */
     public function __construct(string $publicKey, array $options = [])
     {
         $options += ['OAEPpadding' => true];
@@ -54,12 +54,17 @@ class PublicKey extends BaseKey
      *
      * @param string $data
      * @param array $options The following options keys are supported
-     *  - addBoundaries: default:true wraps contents of encrypted data between ENCRYPTED DATA
+     *  - addBoundaries: default:false wraps contents of encrypted data between ENCRYPTED DATA (this will be removed)
      * @return string
      */
     public function encrypt(string $data, array $options = []): string
     {
-        $options += ['addBoundaries' => true];
+        $options += ['addBoundaries' => false];
+        
+        if (mb_strlen($data) > $this->maxEncryptSize()) {
+            throw new EncryptionException('Data is too long');
+        }
+     
         openssl_public_encrypt($data, $encrypted, $this->key, $this->padding());
         if ($encrypted === null) {
             throw new EncryptionException('Unable to encrypt data with key');

@@ -37,7 +37,7 @@ class PrivateKeyTest extends \PHPUnit\Framework\TestCase
         $privateKey = PrivateKey::load(__DIR__ .'/fixture/privateKey');
         $publicKey = PublicKey::load(__DIR__ .'/fixture/publicKey');
 
-        $encrypted = $privateKey->encrypt($original);
+        $encrypted = $privateKey->encrypt($original, ['addBoundaries' => true]);
    
         $this->assertStringContainsString('-----BEGIN ENCRYPTED DATA-----', $encrypted);
         $this->assertEquals($original, $publicKey->decrypt($encrypted));
@@ -51,7 +51,7 @@ class PrivateKeyTest extends \PHPUnit\Framework\TestCase
         $privateKey = PrivateKey::load(__DIR__ .'/fixture/privateKey');
         $publicKey = PublicKey::load(__DIR__ .'/fixture/publicKey');
 
-        $encrypted = $publicKey->encrypt($original);
+        $encrypted = $publicKey->encrypt($original, ['addBoundaries' => true]);
         $this->assertStringContainsString('-----BEGIN ENCRYPTED DATA-----', $encrypted);
         $this->assertEquals($original, $privateKey->decrypt($encrypted));
     }
@@ -66,7 +66,7 @@ class PrivateKeyTest extends \PHPUnit\Framework\TestCase
     public function testSign()
     {
         $privateKey = PrivateKey::load(__DIR__ .'/fixture/privateKey');
-        $this->assertStringContainsString('-----BEGIN SIGNATURE-----', $privateKey->sign('This is a test'));
+        $this->assertStringContainsString('-----BEGIN SIGNATURE-----', $privateKey->sign('This is a test', ['addBoundaries' => true]));
     }
 
     /**
@@ -87,5 +87,13 @@ class PrivateKeyTest extends \PHPUnit\Framework\TestCase
         $publicKey = PublicKey::load(__DIR__ .'/fixture/publicKey');
 
         $this->assertEquals((string) $publicKey, (string) $privateKey->extractPublicKey());
+    }
+
+    public function testEncryptTooBig()
+    {
+        $text = file_get_contents(__DIR__ .'/fixture/large.txt');
+        $privateKey = PrivateKey::load(__DIR__ .'/fixture/privateKey');
+        $this->expectException(EncryptionException::class);
+        $privateKey->encrypt($text);
     }
 }

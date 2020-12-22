@@ -93,12 +93,17 @@ class PrivateKey extends BaseKey
      *
      * @param string $data
      * @param array $options The following options keys are supported
-     *  - addBoundaries: default:true wraps contents of encrypted data between ENCRYPTED DATA
+     *  - addBoundaries: default:false wraps contents of encrypted data between ENCRYPTED DATA (will be removed)
      * @return string
      */
     public function encrypt(string $data, array $options = []): string
     {
-        $options += ['addBoundaries' => true];
+        $options += ['addBoundaries' => false];
+        
+        if (mb_strlen($data) > $this->maxEncryptSize()) {
+            throw new EncryptionException('Data is too long');
+        }
+
         openssl_private_encrypt($data, $encrypted, $this->key);
         if ($encrypted === null) {
             throw new EncryptionException('Unable to encrypt data with key');
@@ -132,14 +137,13 @@ class PrivateKey extends BaseKey
      *
      * @param string $data
      * @param array $options The following options keys are supported
-     *  - addBoundaries: default:true ----- SIGNATURE -----
+     *  - addBoundaries: default:false ----- SIGNATURE ----- (this will be removed)
      *  - algo: default:sha256 Algo to be used to verify signature @see openssl_get_md_methods
      * @return string
-     * @throws \Encryption\Exception\EncryptionException
      */
     public function sign(string $data, array $options = []): string
     {
-        $options += ['addBoundaries' => true,'algo' => 'sha256'];
+        $options += ['addBoundaries' => false,'algo' => 'sha256'];
         openssl_sign($data, $signature, $this->key, $options['algo']);
         $signature = base64_encode($signature);
 

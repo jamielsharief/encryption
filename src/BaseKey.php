@@ -15,6 +15,8 @@ namespace Encryption;
 
 abstract class BaseKey
 {
+    use EncryptionTrait;
+    
     /**
      * Should be true, this is only here for backwards compatability
      *
@@ -30,7 +32,10 @@ abstract class BaseKey
      */
     protected $key;
 
-    const BOUNDARY_PATTERN = "#-----\r?\n(.*)\r?\n-----#s";
+    /**
+     * @var boolean
+     */
+    protected $encodeData = true;
 
     /**
      * Encrypts the data using the private key
@@ -70,42 +75,26 @@ abstract class BaseKey
     }
 
     /**
-     * @param string $encrypted
-     * @param boolean $addBoundaries
-     * @return string
-     */
-    protected function doEncrypt(string $encrypted, bool $addBoundaries): string
-    {
-        $encoded = base64_encode($encrypted);
-
-        return $addBoundaries ? $this->addBoundaries($encoded, 'ENCRYPTED DATA') :  $encoded ;
-    }
-
-    /**
-     * Adds the boundaries to an encrypted string
+     * Gets the key size in bits
      *
-     * @param string $data
-     * @return string
+     * @return integer
      */
-    protected function addBoundaries(string $data, string $boundary): string
+    public function bits(): int
     {
-        return "-----BEGIN {$boundary}-----\n" . $data  . "\n-----END {$boundary}-----";
+        return (int) openssl_pkey_get_details($this->key)['bits'];
     }
 
     /**
-     * Removes the BEGIN/END ENCRYPTED DATA boundaries.
-     * TODO: remove
-     * @param string $data
-     * @return string
+     * @see https://www.openssl.org/docs/manmaster/man3/RSA_public_encrypt.html
+     * @return integer
      */
-    protected function removeBoundaries(string $data): string
+    protected function maxEncryptSize(): int
     {
-        preg_match(self::BOUNDARY_PATTERN, $data, $matches);
-        if ($matches) {
-            $data = $matches[1];
+        if ($this->useOAEPPadding) {
+            return $this->bits() / 8 - 42;
         }
 
-        return $data;
+        return $this->bits() / 8 - 11;
     }
 
     /**
@@ -118,5 +107,23 @@ abstract class BaseKey
     protected function padding(): int
     {
         return $this->useOAEPPadding ? OPENSSL_PKCS1_OAEP_PADDING : OPENSSL_PKCS1_PADDING;
+    }
+
+    /**
+     * @param string $data
+     * @return string
+     */
+    protected function encodeData(string $data): string
+    {
+        return $this->encodeData ? base64_encode($data) : $data;
+    }
+
+    /**
+     * @param string $data
+     * @return string
+     */
+    protected function decodeData(string $data): string
+    {
+        return $this->encodeData ? base64_decode($data) : $data;
     }
 }
