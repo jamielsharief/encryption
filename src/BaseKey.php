@@ -33,11 +33,6 @@ abstract class BaseKey
     protected $key;
 
     /**
-     * @var boolean
-     */
-    protected $encodeData = true;
-
-    /**
      * Encrypts the data using the private key
      *
      * @param string $data
