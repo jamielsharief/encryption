@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.com/jamielsharief/encryption.svg?branch=master)](https://travis-ci.com/jamielsharief/encryption)
 [![Coverage Status](https://coveralls.io/repos/github/jamielsharief/encryption/badge.svg?branch=master)](https://coveralls.io/github/jamielsharief/encryption?branch=master)
 
-This library supports both Asymmetric (using key pairs) and Symmetric (single key) encryption. Both encrypted data and signatures are returned as a `Base64` encoded string.
+This library supports both asymmetric (using key pairs) and symmetric (single key) encryption. There is also a Hybrid encryption which uses both asymmetric and symmetric. Both encrypted data and signatures are returned as a `Base64` encoded string.
 
 ## Asymmetric Encryption
 
@@ -197,11 +197,11 @@ $keychain->list();
 
 ## Symmetric Encryption
 
-First you need to generate a key that must be 32 bits, for example `46d3e5d2cdd5c1c5a677a4d91af3e3b7`
+First you need to generate a key that must be 32 bits
 
 ```php
 $crypto = new SymmetricEncryption();
-$key = $crypto->generateKey(); // this is used to encrypt/decrypt
+$key = $crypto->generateKey(); // 3LSpUJL4s0HNLun4T1KcheGjrVtCjaQ7
 ```
 
 To encrypt a string

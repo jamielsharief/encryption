@@ -30,8 +30,7 @@ class SymmetricEncryptionTest extends \PHPUnit\Framework\TestCase
         $crypto = new SymmetricEncryption();
         $key = $crypto->generateKey();
 
-        $this->assertStringMatchesFormat('%x', $key);
-        $this->assertEquals(32, strlen($key));
+        $this->assertMatchesRegularExpression('/^[a-zA-Z0-9]{32}+$/', $key);
     }
 
     public function testEncryptDecrypt()

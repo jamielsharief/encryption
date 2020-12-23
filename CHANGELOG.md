@@ -11,6 +11,13 @@ Upcoming 2.0 changes
 - [ ] Removed Deprecated Features
 - [ ] Make min 7.4
 - [ ] Adjust Hybrid to toggle base64 instead of decode
+- [ ] Remove the id field from KeyChain field, fingerprint is sufficient
+
+## [1.3.0] - 2020-12-23
+
+### Changed
+
+- Changed SymmetricEncryption::generateKey to generate a key using base62
 
 ## [1.2.0] - 2020-12-22
 

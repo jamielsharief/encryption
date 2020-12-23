@@ -39,7 +39,7 @@ class HybridEncryption
         $symmetric = new SymmetricEncryption();
        
         $sessionKey = $symmetric->generateKey();
-
+  
         return $this->doEncrypt(
             base64_decode($key->encrypt($sessionKey, ['addBoundaries' => false])).
             base64_decode($symmetric->encrypt($data, $sessionKey)),

@@ -83,11 +83,19 @@ class SymmetricEncryption
     /**
      * Generates a secure 256 bits (32 bytes) key
      *
+     * 62^8 = 2,272,657,884,496,799,923,276,216,267,898,815,945,334,186,617,388,524,371,968
+     *
      * @return string
      */
     public static function generateKey(): string
     {
-        return bin2hex(random_bytes(16));
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $out = '';
+        for ($i = 0; $i < 32; $i++) {
+            $out .= $characters[random_int(0, 61)];
+        }
+
+        return $out;
     }
 
     /**
