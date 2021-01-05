@@ -1,7 +1,7 @@
 # Encryption
 
 ![license](https://img.shields.io/badge/license-MIT-brightGreen.svg)
-[![Build Status](https://travis-ci.com/jamielsharief/encryption.svg?branch=master)](https://travis-ci.com/jamielsharief/encryption)
+[![build](https://github.com/jamielsharief/encryption/workflows/CI/badge.svg)](https://github.com/jamielsharief/encryption/actions)
 [![Coverage Status](https://coveralls.io/repos/github/jamielsharief/encryption/badge.svg?branch=master)](https://coveralls.io/github/jamielsharief/encryption?branch=master)
 
 This library supports both asymmetric (using key pairs) and symmetric (single key) encryption. There is also a Hybrid encryption which uses both asymmetric and symmetric. Both encrypted data and signatures are returned as a `Base64` encoded string.

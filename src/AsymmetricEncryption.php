@@ -1,7 +1,7 @@
 <?php
 /**
  * Encryption
- * Copyright 2020 Jamiel Sharief.
+ * Copyright 2020-2021 Jamiel Sharief.
  *
  * Licensed under The MIT License
  * The above copyright notice and this permission notice shall be included in all copies or substantial
@@ -14,7 +14,7 @@ declare(strict_types = 1);
 namespace Encryption;
 
 /**
- * Asymmetric Encryption
+ * Asymmetric Encryption (DO NOT USE ANYMORE)
  *
  * IMPORTANT: This class is maintained for backwards comptability but has a security
  * issue re: OAEP padding. Migrate any data and code to use PrivateKey and PublicKey objects.

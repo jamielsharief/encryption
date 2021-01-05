@@ -1,7 +1,7 @@
 <?php
 /**
  * Encryption
- * Copyright 2020 Jamiel Sharief.
+ * Copyright 2020-2021 Jamiel Sharief.
  *
  * Licensed under The MIT License
  * The above copyright notice and this permission notice shall be included in all copies or substantial
@@ -10,6 +10,7 @@
  * @copyright   Copyright (c) Jamiel Sharief
  * @license     https://opensource.org/licenses/mit-license.php MIT License
  */
+declare(strict_types = 1);
 namespace Encryption\Exception;
 
 use Exception;

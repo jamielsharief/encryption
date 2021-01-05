@@ -1,7 +1,7 @@
 <?php
 /**
  * Encryption
- * Copyright 2020 Jamiel Sharief.
+ * Copyright 2020-2021 Jamiel Sharief.
  *
  * Licensed under The MIT License
  * The above copyright notice and this permission notice shall be included in all copies or substantial
@@ -83,7 +83,7 @@ class SymmetricEncryption
     /**
      * Generates a secure 256 bits (32 bytes) key
      *
-     * 62^8 = 2,272,657,884,496,799,923,276,216,267,898,815,945,334,186,617,388,524,371,968
+     * 62^32 = 2,272,657,884,496,799,923,276,216,267,898,815,945,334,186,617,388,524,371,968
      *
      * @return string
      */
