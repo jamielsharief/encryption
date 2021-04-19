@@ -61,7 +61,6 @@ You can also generate a private key using the static method `generate`, this wil
 $privateKey = PrivateKey::generate();
 ```
 
-
 ## Working with Public Keys
 
 To create a `PublicKey` object using a public key string, pass this to the constructor
@@ -88,7 +87,6 @@ $fingerprint = $publicKey->fingerprint(); // D52A E482 CBE7 BB75 0148 3851�
 $bits = $publicKey->bits(); // 4096
 echo $publicKey->toString();
 ```
-
 
 ### Keychain
 
@@ -194,10 +192,9 @@ To get a list of keys
 $keychain->list();
 ```
 
-
 ## Symmetric Encryption
 
-First you need to generate a key that must be 32 bits
+First you will need to generate a key that is 256 bit/32 bytes
 
 ```php
 $crypto = new SymmetricEncryption();
